@@ -1,102 +1,213 @@
-# forr_cat — university project handoff
+# 🐱 FOR_CAT — Hệ thống chăm sóc mèo thông minh
 
-Local cat-activity observation and future supervised food/water control using a **normal USB webcam**, Jetson Nano and ESP32-S3. The project prepares identity/behavior tracking, validated-sensor fusion, local history and an API for an existing Web/App. It does not diagnose health or claim a cat definitely likes a food.
+Dự án sử dụng **USB Webcam + Jetson Nano + ESP32-S3** để theo dõi mèo, nhận diện bằng AI và hướng tới quản lý thức ăn, nước uống tự động.
 
-## Current architecture and roles
+---
+
+## 1. Kiến trúc hệ thống
 
 ```text
-NORMAL USB WEBCAM
-        ↓ USB frames
-JETSON NANO — Camera/OpenCV, future AI runtime, temporal behavior, SQLite, REST
-        ↓ USB SERIAL — frozen UART v1
-ESP32-S3 N16R8 candidate — sensors, feeding/water safety, RTC/persistence
-        ↓
-SENSORS / UI / SERVO / PUMP — physical actuator outputs DISABLED
-
-Existing Flutter/Web ↔ REST API ↔ Jetson Nano
+USB Webcam
+     ↓
+Jetson Nano
+     ├── OpenCV + TensorRT
+     ├── Nhận diện CAT / DOG
+     ├── Phân tích hành vi
+     ├── Lưu lịch sử
+     └── REST API
+     ↓ USB Serial
+ESP32-S3
+     ├── Cảm biến
+     ├── Servo thức ăn
+     ├── Bơm nước
+     └── Kiểm tra an toàn
 ```
 
-The webcam supplies pixels; **AI runs on Jetson**, not on the webcam. ESP32-S3 is the **final local actuator safety authority**, separate from Jetson inference/API/network failures. The seller board/memory/pins/USB routing are unverified; official S3 and classic build targets are compile/regression profiles, not alternate production architectures. **No STM32, no ESP32-CAM, no AI-camera requirement.**
+### Vai trò
 
-## Current status — M2
+| Thiết bị | Nhiệm vụ |
+|---|---|
+| Webcam | Thu hình ảnh |
+| Jetson Nano | Chạy AI và xử lý logic |
+| ESP32-S3 | Điều khiển phần cứng và kiểm tra an toàn |
+| Servo | Cấp thức ăn |
+| Pump | Cấp nước |
+| Sensors | Theo dõi thức ăn, nước và trạng thái |
 
-**M2 — PRE-HARDWARE SOFTWARE CANDIDATE. Pre-hardware development is frozen after this handoff.**
+---
 
-| Verification | Result |
-| --- | --- |
-| Python | 301 PASS |
-| Native C++ | 3271 assertions PASS: 140 safety +3131 driver |
-| UART / guards / safe builds | 7/7 vectors; 18/18 guards; 11/11 profiles PASS |
-| Dataset / AI / target hardware | DATASET_NOT_AVAILABLE (0 real samples); NOT TRAINED; NOT VERIFIED |
-| Outputs | Actuator flags0, final GPIOs unassigned, AI_SHADOW_MODE=true |
+## 2. Trạng thái hiện tại
 
-These are host/fake-I/O/simulation/compile results, not physical sensing, feeding or AI accuracy. Normal HW_SAFE rejects physical feeds; SIM results are explicitly synthetic. ACK means receipt, not SUCCESS. Physical SERIAL API feeds are rejected locally.
+- ✅ Jetson Nano hoạt động
+- ✅ USB Webcam hoạt động
+- ✅ OpenCV C++ hoạt động
+- ✅ TensorRT FP16 hoạt động
+- ✅ Nhận diện CAT / DOG chạy khoảng 30 FPS
+- ✅ ESP32-S3 đã có firmware nền tảng
+- ✅ Source code đã lưu trên GitHub
+- ⚠️ AI hiện vẫn ở **SHADOW MODE**
+- ⚠️ AI chưa tự động kích hoạt Servo/Pump
 
-Start with [current state](docs/CURRENT_PROJECT_STATE.md), [final verification baseline](docs/PRE_HARDWARE_FINAL_BASELINE.md) and [handoff report](docs/PRE_HARDWARE_HANDOFF.md). [Documentation precedence](docs/DOCUMENTATION_SOURCE_OF_TRUTH.md) labels older Phase/RC/audit records as historical.
+---
 
-The authorized [deep quality release](docs/PRE_HARDWARE_RELEASE_CANDIDATE.md) fixes evidenced correctness/resource defects and adds risk-based failure/generative/contract tests—not product features. Static/strict/source audit logs and source/firmware hashes are in ignored `.release/`; [quality scope](docs/RELEASE_QUALITY_SCOPE.md) documents limits. Starting217/1328 counts remain historical; actual final counts above are not forced. Hardware/data/AI milestones are unchanged.
+## 3. AI hiện tại
 
-## Repository map
+```text
+Model: YOLOv8n
+Input: 320 x 320
+Runtime: TensorRT FP16
 
-| Path | Purpose |
-| --- | --- |
-| `jetson/app/` | FastAPI/config, camera, AI interfaces/service, temporal/fusion, analytics, SQLite and serial manager |
-| `jetson/tools/` | Explicit demo/replay/capture/report/diagnostic commands |
-| `ai/` | Dataset/annotation/splits/releases, experiment/candidate/inactive registry and evaluation tools; no trainer/weights bundled |
-| `esp32/` | Safe firmware, portable safety, configured driver foundations, explicit diagnostics and persistence |
-| `jetson/tests/`, `ai/tests/`, `esp32/test/` | Host tests and native assertions |
-| `scripts/` | Isolated setup and complete check runner |
-| `docs/` | Contracts, workflows, requirements, thesis drafts and handoff |
-| `evidence/` | Blank instructions/layout; private actual evidence is ignored |
-
-Detailed module map: [SOURCE_TREE_MAP.md](docs/SOURCE_TREE_MAP.md). The existing frontend is outside this repository and remains unmodified/unverified.
-
-## Setup and complete checks
-
-From project root on Windows, using an isolated Python environment:
-
-```powershell
-& .\scripts\setup_dev_windows.ps1 -WithOpenCV
-& .\scripts\run_checks.ps1
+CAT  → cho phép đi tiếp vào logic
+DOG  → BLOCK
+NONE → BLOCK
 ```
 
-Native checks also require a C++17 compiler (observed Zig0.16.0); setup/check details and host package snapshot are in [REPRODUCIBLE_ENVIRONMENT.md](docs/REPRODUCIBLE_ENVIRONMENT.md). Checks cover Python/data/video, dependencies, native safety/drivers, UART, guards and all11 safe firmware profiles. They return nonzero on failures/missing required tools and preserve complete `.checks/` logs/summary. Linux wrapper: `sh scripts/run_checks.sh`; actual Jetson compatibility remains unverified.
+Model hiện tại dùng để thử nghiệm và đánh giá, chưa dùng làm điều kiện duy nhất để điều khiển phần cứng.
 
-Compile one safe S3 image from root, **no upload**:
+---
 
-```powershell
-& .\.tools-venv\Scripts\pio.exe run --project-dir esp32 -e esp32s3_n16r8_hw_safe_uart
+## 4. Luồng hoạt động
+
+```text
+Mèo đến
+   ↓
+Webcam ghi hình
+   ↓
+Jetson nhận diện
+   ↓
+Phân tích hành vi
+   ↓
+Kiểm tra điều kiện
+   ↓
+Gửi yêu cầu sang ESP32-S3
+   ↓
+ESP32 kiểm tra an toàn
+   ↓
+Servo / Pump
 ```
 
-This is the bridge-route compile surrogate. Actual board/memory/USB route must be reviewed before selecting/uploading firmware. Native-USB safe and sensor diagnostic profiles are described in the existing bring-up guides. Never select SIM as physical sensor evidence.
+---
 
-## Quick software demo — SYNTHETIC / MOCK ONLY
+## 5. Cấu trúc dự án
 
-From `jetson/`:
-
-```powershell
-& ..\.venv\Scripts\python.exe -m tools.demo_replay
-& ..\.venv\Scripts\python.exe -m tools.run_simulator NORMAL
-# Optional local mock API, no physical worker starts automatically:
-& ..\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```text
+for_cat/
+├── jetson/      Code chạy trên Jetson Nano
+├── esp32/       Firmware ESP32-S3
+├── ai/          Dataset và công cụ AI
+├── docs/        Tài liệu dự án
+├── scripts/     Script kiểm tra/build
+├── README.md
+└── JETSON_COMMANDS.md
 ```
 
-Use `/api/v1/health`, `/api/v1/readiness` and documented history/status routes. The API defaults to mocks; attaching hardware does not silently enable it. [DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) and [DEMO_FAILURE_RECOVERY.md](docs/DEMO_FAILURE_RECOVERY.md) define honest presentation/fallbacks.
+---
 
-## Hardware starting point
+## 6. Chạy AI trên Jetson
 
-Read [JETSON_FIRST_DAY.md](docs/JETSON_FIRST_DAY.md), [ESP32_S3_FIRST_FLASH.md](docs/ESP32_S3_FIRST_FLASH.md) and [M3 physical gates](docs/M3_M4_GATE_DEFINITION.md). First actual task: identify/power the real Jetson and ESP32-S3, review memory/USB/supply, then safe USB PING/GET_STATUS and unplug/replug evidence with sensors/actuators disconnected. After M3 and pin/voltage review, HX711-only testing starts via [M4_DIAGNOSTIC_COMMANDS.md](docs/M4_DIAGNOSTIC_COMMANDS.md). Driver code exists; physical calibration/control does not.
+### SSH từ laptop
 
-## Dataset and AI workflow
+```bash
+ssh -Y toan@192.168.123.10
+```
 
-Real passive sessions → explicit bounded capture (dry-run default) → human labels → session/source/duplicate-safe splits → versioned dataset gates → recorded real experiments → inactive model registration → independent host/Jetson evaluation → shadow observations. Start with [DATA_CAPTURE_WORKFLOW.md](docs/DATA_CAPTURE_WORKFLOW.md), [ANNOTATION_GUIDELINES.md](docs/ANNOTATION_GUIDELINES.md) and [AI_RESEARCH_EXECUTION_PLAN.md](docs/AI_RESEARCH_EXECUTION_PLAN.md). No dataset download, training or production threshold selection runs automatically.
+### Chạy nhận diện CAT / DOG
 
-## Thesis and transfer
+```bash
+cd /home/toan/for_cat/jetson/ai
+./cat_dog_trt
+```
 
-[Vietnamese outline](docs/THESIS_REPORT_OUTLINE_VI.md), [supported draft](docs/THESIS_DRAFT_VI.md), [blank result tables](docs/THESIS_RESULTS_TABLES.md), [presentation](docs/FINAL_PRESENTATION_STRUCTURE_VI.md), [transfer instructions](docs/PROJECT_HANDOFF.md), [release checklist](docs/RELEASE_CHECKLIST.md) and [evidence index](docs/EVIDENCE_INDEX.md).
+Thoát bằng:
 
-## Known limits / stop point
+```text
+q
+```
 
-No real Jetson/webcam-on-Jetson/ESP32 runtime, sensor/actuator/NVS calibration, cat corpus, trained model, TensorRT performance or full frontend demo is validated. Current AI/track/model tools are foundations, not a deployed classifier/tracker. Frozen v1 lacks production sensor telemetry; active physical control remains prohibited. API stays local by default; auth/TLS deployment is future evidence-dependent work.
+hoặc:
 
-**Stop pre-hardware feature development. Next evidence must come from real Jetson, ESP32-S3, sensors, camera, cat video or real training. Do not inflate progress from more fixtures/docs.**
+```text
+Ctrl + C
+```
+
+---
+
+## 7. Các chức năng hướng tới
+
+- Nhận diện mèo và chó
+- Theo dõi thời gian mèo đến
+- Nhận diện hành vi ăn/uống
+- Ghi thời gian bắt đầu và kết thúc
+- Tính thời gian ăn
+- Theo dõi lượng thức ăn
+- Theo dõi lượng nước
+- Nghiên cứu món mèo thích
+- Lưu lịch sử vào cơ sở dữ liệu
+- Hiển thị dữ liệu trên Web/App
+
+---
+
+## 8. Nguyên tắc an toàn
+
+```text
+Jetson Nano = AI + xử lý cấp cao
+ESP32-S3    = kiểm tra an toàn cuối cùng
+```
+
+Jetson không trực tiếp điều khiển Servo/Pump.
+
+ESP32-S3 phải kiểm tra điều kiện an toàn trước khi phần cứng hoạt động.
+
+---
+
+## 9. Lệnh sử dụng
+
+Các lệnh Jetson, TensorRT, Webcam, Compile C++ và Git được lưu tại:
+
+```text
+JETSON_COMMANDS.md
+```
+
+---
+
+## 10. Cập nhật GitHub
+
+Sau khi sửa code:
+
+```bash
+cd /home/toan/for_cat
+git add .
+git commit -m "Update project"
+git push
+```
+
+Lấy phiên bản mới từ GitHub:
+
+```bash
+git pull
+```
+
+---
+
+## 11. Phần cứng chính
+
+- Jetson Nano 2GB
+- ESP32-S3
+- USB Webcam
+- Servo
+- Water Pump
+- Load Cell + HX711
+- Cảm biến mức nước
+- RTC
+- Display
+
+---
+
+## Trạng thái an toàn hiện tại
+
+```text
+AI_SHADOW_MODE       = ON
+AUTO_ACTUATOR_CONTROL = OFF
+```
+
+Điều khiển tự động chỉ được bật sau khi AI, cảm biến và cơ chế an toàn được kiểm tra đầy đủ.

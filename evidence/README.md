@@ -1,0 +1,7 @@
+# Local physical evidence — EMPTY, no hardware pass recorded
+
+Directories: `jetson/`, `webcam/`, `esp32/`, `serial/`, `hx711/`, `rtc/`, `food_sensor/`, `water_sensor/`, `servo/`, `pump/`. Actual logs/photos are ignored by Git; only this README and empty `.gitkeep` layout belong in source. Review privacy before sharing.
+
+Use filenames `YYYYMMDDTHHMMSSZ_component_test_outcome.ext`, e.g. a **future** serial log name `YYYYMMDDTHHMMSSZ_serial_connected.log`. That pattern is not evidence that a test occurred. Record timezone, exact board/module/revision, firmware/image SHA256 or commit, command, expected and actual result, PASS/FAIL/NOT TESTED, photo/log filenames and notes. Put image/build hashes and board/USB port photos in `esp32/`; connected/unplugged/reconnected traces and timings in `serial/`. UI/button/buzzer/OLED evidence may be grouped under `esp32/` with a component-specific filename.
+
+From project root on the real Jetson, `sh scripts/m3_check_jetson.sh` prints diagnostic output only. Add **explicit** `--save` to create a timestamped `evidence/jetson/` log. No camera/serial/GPU test or package install is started by that diagnostic. Sensor/UI diagnostic foundations now exist (`docs/M4_DIAGNOSTIC_COMMANDS.md`) but require real reviewed configuration and bench evidence; active actuator firmware remains absent/disabled. Earlier absent-sensor-driver wording is historical. Do not insert simulator results here as physical evidence. Gate map: `docs/EVIDENCE_INDEX.md`.

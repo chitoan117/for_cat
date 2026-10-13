@@ -1,0 +1,3 @@
+# Research/training is intentionally NOT automatically installed.
+# Select compatible pinned PyTorch/ONNX/etc only after actual dataset/runtime audit.
+# No AI package is required for core/mock/replay service startup.

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "forr_cat anonymous labeled frame metadata v1",
+  "type": "object",
+  "required": ["sample_id", "session_id", "source_video", "timestamp", "identity_label", "behavior_label", "usable", "hash", "source_hash", "path"],
+  "properties": {
+    "sample_id": {"type": "string", "pattern": "^[a-z0-9_-]{1,64}$"},
+    "session_id": {"type": "string", "pattern": "^[a-z0-9_-]{1,64}$"},
+    "source_video": {"type": "string", "maxLength": 128},
+    "source_offset_seconds": {"type": ["number", "null"], "minimum": 0},
+    "timestamp": {"type": ["string", "null"], "format": "date-time"},
+    "identity_label": {"enum": ["OWNER_CAT", "OTHER_CAT", "OTHER_OBJECT", "SKIP", null]},
+    "behavior_label": {"enum": ["EATING", "DRINKING", "NEAR_FOOD", "NEAR_WATER", "LEAVING", "OTHER", "UNSURE", "SKIP", null]},
+    "food_type": {"type": ["string", "null"], "maxLength": 64},
+    "lighting": {"type": ["string", "null"], "maxLength": 64},
+    "distance": {"type": ["string", "null"], "maxLength": 64},
+    "view_angle": {"type": ["string", "null"], "maxLength": 64},
+    "occlusion": {"type": ["string", "null"], "maxLength": 64},
+    "camera_device": {"type": ["string", "null"], "maxLength": 64},
+    "notes": {"type": ["string", "null"], "maxLength": 256},
+    "usable": {"type": "boolean"},
+    "hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "source_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "path": {"type": "string", "maxLength": 128}
+  },
+  "additionalProperties": false
+}

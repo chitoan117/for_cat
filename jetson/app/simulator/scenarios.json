@@ -1,0 +1,23 @@
+{
+  "NORMAL": {"identity": "OWNER_CAT", "feed": "success"},
+  "COOLDOWN_REJECTED": {"identity": "OWNER_CAT", "feed": "cooldown"},
+  "DAILY_LIMIT_REJECTED": {"identity": "OWNER_CAT", "feed": "daily_limit"},
+  "FOOD_EMPTY": {"identity": "OWNER_CAT", "feed": "food_empty"},
+  "HX711_FAILURE": {"identity": "OWNER_CAT", "feed": "hx711_failure"},
+  "NO_WEIGHT_PROGRESS": {"identity": "OWNER_CAT", "feed": "no_progress"},
+  "FEED_TIMEOUT": {"identity": "OWNER_CAT", "feed": "timeout"},
+  "RTC_INVALID": {"identity": "OWNER_CAT", "feed": "rtc_invalid"},
+  "SERVO_FAILURE": {"identity": "OWNER_CAT", "feed": "servo_failure"},
+  "WATER_NORMAL": {"identity": "NO_SUBJECT", "water": "normal"},
+  "WATER_LOW": {"identity": "NO_SUBJECT", "water": "low"},
+  "WATER_FILL_SUCCESS": {"identity": "NO_SUBJECT", "water": "success"},
+  "WATER_SENSOR_FAILURE": {"identity": "NO_SUBJECT", "water": "sensor_failure"},
+  "PUMP_NO_PROGRESS": {"identity": "NO_SUBJECT", "water": "no_progress"},
+  "PUMP_TIMEOUT": {"identity": "NO_SUBJECT", "water": "timeout"},
+  "SERIAL_DISCONNECT": {"identity": "OWNER_CAT", "feed": "disconnect"},
+  "SERIAL_RECOVERY": {"identity": "OWNER_CAT", "feed": "recovery"},
+  "OTHER_CAT": {"identity": "OTHER_CAT"},
+  "NO_SUBJECT": {"identity": "NO_SUBJECT"},
+  "EATING": {"identity": "OWNER_CAT", "behavior": "EATING"},
+  "DRINKING": {"identity": "OWNER_CAT", "behavior": "DRINKING"}
+}

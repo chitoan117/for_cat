@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "experiment_id": "identity_pilot_example",
+  "dataset_version": "pilot_version_placeholder",
+  "task": "identity",
+  "architecture": "mobilenetv3",
+  "seed": 42,
+  "input_size": [224,224],
+  "epochs": 10,
+  "batch_size": 8,
+  "optimizer": "AdamW",
+  "learning_rate": 0.001,
+  "augmentation": ["reviewed_color_jitter", "reviewed_crop"],
+  "early_stopping": 3,
+  "class_weights": null,
+  "thresholds": {}
+}

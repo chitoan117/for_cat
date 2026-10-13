@@ -1,0 +1,63 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.tools-venv/
+.tools-zig/
+.native-build/
+.checks/
+.release/
+.ruff_cache/
+.mypy_cache/
+.pio/
+*.db
+*.db-*
+ai/datasets/raw/*
+ai/datasets/processed/*
+!ai/datasets/raw/.gitkeep
+!ai/datasets/processed/.gitkeep
+ai/models/*
+!ai/models/.gitkeep
+ai/datasets/manifest.jsonl
+ai/datasets/splits.json
+ai/datasets/sources.jsonl
+ai/reports/*.json
+ai/datasets/capture/
+ai/datasets/releases/
+ai/datasets/exports/
+ai/experiments/runs/
+ai/registry/local/
+# Physical evidence is private/local; only blank layout and instructions are source.
+/evidence/*
+!/evidence/README.md
+!/evidence/*/
+/evidence/*/*
+!/evidence/*/.gitkeep
+
+# Local development environments/tools
+.venv/
+.tools-zig/
+
+# Root AI deployment models
+/models/
+*.engine
+*.plan
+*.onnx
+*.pt
+*.pth
+
+# Runtime outputs
+latest.jpg
+
+# Compiled Jetson binary
+/jetson/ai/cat_dog_trt
+
+# Secrets
+.env
+
+# Generated binaries / backups
+*.bin
+*.bak
+
+# Accidental duplicate
+jetson/ai/cat_dog_trt.cpP

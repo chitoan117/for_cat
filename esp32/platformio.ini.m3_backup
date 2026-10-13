@@ -1,0 +1,128 @@
+; Safe default: compile-only simulations, no physical GPIO actuator output.
+[platformio]
+default_envs = esp32dev_sim
+
+[env]
+platform = espressif32@55.3.311
+board = esp32dev
+framework = arduino
+monitor_speed = 115200
+build_flags =
+    -DACTUATOR_OUTPUTS_ENABLED=0
+
+[env:esp32dev_sim]
+build_flags =
+    ${env.build_flags}
+    -DSIMULATED_SENSORS=1
+    -DFORR_BOARD_CLASSIC=1
+
+[env:esp32dev_hw_safe]
+build_flags =
+    ${env.build_flags}
+    -DGENERIC_ESP32DEV=1
+    -DFORR_BOARD_CLASSIC=1
+    -DFORR_HW_SAFE=1
+
+; Legacy name retained for Phase 2 manual build instructions; also inert.
+[env:esp32dev]
+build_flags =
+    ${env.build_flags}
+    -DSIMULATED_SENSORS=1
+    -DFORR_BOARD_CLASSIC=1
+
+; COMPILE SURROGATE ONLY: official N8 manifest, supported memory overrides.
+; NOT EXACT SELLER BOARD VERIFIED / NOT HARDWARE VERIFIED.
+[s3_surrogate]
+board = esp32-s3-devkitc-1
+board_upload.flash_size = 16MB
+board_upload.maximum_size = 16777216
+board_build.arduino.memory_type = qio_opi
+board_build.psram_type = opi
+board_build.partitions = default_16MB.csv
+build_flags =
+    ${env.build_flags}
+    -DFORR_BOARD_S3=1
+    -DBOARD_HAS_PSRAM
+    -DFORR_NATIVE_USB=1
+    -DARDUINO_USB_CDC_ON_BOOT=1
+
+[env:esp32s3_n16r8_sim]
+extends = s3_surrogate
+build_flags =
+    ${s3_surrogate.build_flags}
+    -DSIMULATED_SENSORS=1
+
+[env:esp32s3_n16r8_hw_safe]
+extends = s3_surrogate
+build_flags =
+    ${s3_surrogate.build_flags}
+    -DFORR_HW_SAFE=1
+
+; M3 first-flash option: CH343G/other bridge -> UART0, not native USB CDC.
+; Still COMPILE SURROGATE ONLY. Confirm exact module/memory/bridge routing first.
+[env:esp32s3_n16r8_hw_safe_uart]
+extends = s3_surrogate
+build_flags =
+    ${env.build_flags}
+    -DFORR_BOARD_S3=1
+    -DBOARD_HAS_PSRAM
+    -DFORR_NATIVE_USB=0
+    -DARDUINO_USB_CDC_ON_BOOT=0
+    -DFORR_HW_SAFE=1
+    -DFORR_BUILD_BANNER=1
+
+; Real driver diagnostics: explicitly selected, no pins guessed or outputs enabled.
+; Binary UART v1 firmware is NOT active in these human ASCII diagnostic images.
+[m4_diagnostic]
+extends = s3_surrogate
+build_flags =
+    ${env.build_flags}
+    -DFORR_BOARD_S3=1
+    -DBOARD_HAS_PSRAM
+    -DFORR_NATIVE_USB=0
+    -DARDUINO_USB_CDC_ON_BOOT=0
+    -DFORR_HW_SAFE=1
+    -DSERVO_DIAGNOSTIC_ENABLED=0
+    -DPUMP_DIAGNOSTIC_ENABLED=0
+
+[env:diag_hx711]
+extends = m4_diagnostic
+build_flags = ${m4_diagnostic.build_flags} -DM4_DIAGNOSTIC_MODE=1
+
+[env:diag_rtc]
+extends = m4_diagnostic
+build_flags = ${m4_diagnostic.build_flags} -DM4_DIAGNOSTIC_MODE=2
+
+[env:diag_i2c]
+extends = m4_diagnostic
+build_flags = ${m4_diagnostic.build_flags} -DM4_DIAGNOSTIC_MODE=3
+
+[env:diag_food_sensor]
+extends = m4_diagnostic
+build_flags = ${m4_diagnostic.build_flags} -DM4_DIAGNOSTIC_MODE=4
+
+[env:diag_water_sensor]
+extends = m4_diagnostic
+build_flags = ${m4_diagnostic.build_flags} -DM4_DIAGNOSTIC_MODE=5
+
+[env:diag_oled_button_buzzer]
+extends = m4_diagnostic
+build_flags = ${m4_diagnostic.build_flags} -DM4_DIAGNOSTIC_MODE=6
+
+[env:esp32s3_16mb_no_psram_hw_safe_uart]
+platform = espressif32@55.3.311
+board = esp32-s3-devkitc-1
+framework = arduino
+monitor_speed = 115200
+
+board_upload.flash_size = 16MB
+board_upload.maximum_size = 16777216
+board_build.partitions = default_16MB.csv
+
+build_flags =
+    -DACTUATOR_OUTPUTS_ENABLED=0
+    -DFORR_BOARD_S3=1
+    -DFORR_NATIVE_USB=0
+    -DARDUINO_USB_CDC_ON_BOOT=0
+    -DFORR_HW_SAFE=1
+    -DFORR_BUILD_BANNER=1

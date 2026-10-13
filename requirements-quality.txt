@@ -1,0 +1,3 @@
+# Isolated developer/release checks ONLY; not runtime/Jetson dependencies.
+ruff==0.14.10
+mypy==1.19.1

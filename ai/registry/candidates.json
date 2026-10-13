@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "candidates": [
+    {"candidate_id":"yolo_lightweight","task":"detector","input_size":[640,640],"runtime":"FUTURE_ONNX_OR_TENSORRT","export_target":"ONNX","expected_complexity":"LOW_TO_MODERATE; exact variant undecided","status":"NOT_TESTED","deployment_status":"JETSON_NOT_TESTED"},
+    {"candidate_id":"ssd_mobilenet","task":"detector","input_size":[300,300],"runtime":"FUTURE_ONNX","export_target":"ONNX","expected_complexity":"LOW_TO_MODERATE","status":"NOT_TESTED","deployment_status":"JETSON_NOT_TESTED"},
+    {"candidate_id":"resnet18","task":"identity","input_size":[224,224],"runtime":"FUTURE_PYTORCH_ONNX","export_target":"ONNX","expected_complexity":"MODERATE","status":"NOT_TESTED","deployment_status":"JETSON_NOT_TESTED"},
+    {"candidate_id":"mobilenetv3","task":"identity","input_size":[224,224],"runtime":"FUTURE_PYTORCH_ONNX","export_target":"ONNX","expected_complexity":"LOW_TO_MODERATE","status":"NOT_TESTED","deployment_status":"JETSON_NOT_TESTED"},
+    {"candidate_id":"embedding_reid","task":"identity","input_size":[224,224],"runtime":"FUTURE_RESEARCH","export_target":"UNDECIDED","expected_complexity":"RESEARCH_OPTION","status":"NOT_TESTED","deployment_status":"JETSON_NOT_TESTED"},
+    {"candidate_id":"frame_classifier","task":"behavior","input_size":[224,224],"runtime":"FUTURE_PYTORCH_ONNX","export_target":"ONNX","expected_complexity":"BASELINE","status":"NOT_TESTED","deployment_status":"JETSON_NOT_TESTED"},
+    {"candidate_id":"temporal_aggregation","task":"behavior","input_size":[224,224],"runtime":"PORTABLE_POSTPROCESS_PLUS_FUTURE_CLASSIFIER","export_target":"ONNX_CLASSIFIER_AND_RECORDED_TEMPORAL_CONFIG","expected_complexity":"BASELINE","status":"HOST_TEST_ONLY","deployment_status":"JETSON_NOT_TESTED"},
+    {"candidate_id":"video_model_future","task":"behavior","input_size":[224,224],"runtime":"FUTURE_RESEARCH","export_target":"UNDECIDED","expected_complexity":"HIGH_RELATIVE_TO_FRAME_BASELINE","status":"NOT_TESTED","deployment_status":"JETSON_NOT_TESTED"}
+  ]
+}

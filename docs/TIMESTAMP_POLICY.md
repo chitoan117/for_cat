@@ -1,0 +1,6 @@
+# Timestamp and clock policy
+
+- Python API, SQLite typed records and event history store timezone-aware UTC timestamps. A missing actual capture time stays `null` in dataset metadata; source video relative offsets are stored separately and must not be misreported as real wall-clock capture times. Replay frame timestamps are relative to replay start, **not** original camera capture time.
+- Elapsed behavior sessions, feed/water timeouts, serial read deadlines and cooldown within a live process use monotonic clocks/ticks. Do not compute safety timeouts from potentially adjusted wall clock. ESP32 unsigned millisecond subtraction handles tick wrap; actual hardware rollover remains untested.
+- The Jetson clock dates history and serves REST. The ESP32's future DS3231 independently determines validated day/epoch for daily portions, grams and cooldown; Jetson requests never override MCU safety. Invalid/rollback RTC or corrupt NVS prevents feeding. Safe boot does not resume interrupted actuator work.
+- The PC Python simulator uses explicit synthetic time and cannot validate real DS3231 drift, timezones, NVS endurance or synchronization. Record time-source accuracy during hardware validation before using daily limits.

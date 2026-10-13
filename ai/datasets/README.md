@@ -1,0 +1,3 @@
+# Datasets (empty)
+
+No images or models are downloaded, recorded or trained by default. `schema.json` documents anonymous, session-scoped JSONL metadata. From project root use `python -m ai.scripts.import_video`, `extract_frames`, `import_capture`, `label_dataset`, `validate_dataset`, `split_dataset`, and `dataset_report` with `--help`. Writes require explicit `--apply`; report/validation work with an empty dataset and return `DATASET_NOT_AVAILABLE`. Source files and generated manifests are gitignored. Review consent, privacy, image integrity and session-safe splits before future supervised collection. Do not split adjacent frames from one video session across train/test.

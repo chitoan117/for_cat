@@ -1,0 +1,9 @@
+# Future food comparison — BEHAVIORAL PREFERENCE TREND only
+
+The goal is to compare **observed behavior**, not to claim knowledge of a cat's subjective liking, hunger or emotion. No actual food sessions or scientifically validated preference score exist yet.
+
+Plan multiple separate feeding sessions **per food type** (configured minimum currently 3 valid sessions; this is a software insufficiency threshold, not a research sample-size claim). For each session record: anonymous session/cat ID, food type and freshness, UTC date/time of day, amount dispensed, weight before/after and amount consumed **only if calibrated/stable measurements are valid**, approach delay, eating start/end and duration, leftover amount, repeat visits, portion size and a session-validity/reject/fault reason. Mark camera confidence/evidence and whether sensor data was validated; never substitute guessed grams.
+
+Keep portions and observation windows comparable and alternate food types over days rather than grouping one type only when the cat is hungrier. Control or record confounders: time since last meal/hunger, portion size, time of day, environment/noise, stress, food freshness, bowl position and handling. Do not run unsafe tests or force eating. A different bowl position or medical change can dominate apparent behavior.
+
+Experimental analysis exposes distinct valid session count, consumption ratios, approach delay, eating duration, leftovers, repeat-visit rate and consistency across sessions. It returns `INSUFFICIENT_DATA` without enough reliable measurements. If sufficient, label results **BEHAVIORAL PREFERENCE TREND** or **observed preference trend** with the evidence and experimental formula (`SIMULATION_AND_AI_TOOLING.md`); do not present HIGH/MODERATE/LOW as a certain internal preference. Review confounders and repeat measurements before any conclusion.

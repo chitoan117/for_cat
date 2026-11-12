@@ -1,0 +1,17 @@
+[Unit]
+Description=ForCat read-only C++ ESP32 telemetry bridge (no serial TX)
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+WorkingDirectory=%h/for_cat
+ExecStart=%h/for_cat/.native-build/esp32/esp32_bridge --device auto --db %h/for_cat/jetson/data/events.db --log %h/for_cat/evidence/esp32_bridge.jsonl
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=10
+NoNewPrivileges=true
+UMask=0077
+
+[Install]
+WantedBy=default.target

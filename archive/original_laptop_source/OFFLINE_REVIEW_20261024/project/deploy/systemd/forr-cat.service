@@ -1,0 +1,29 @@
+# TEMPLATE ONLY: replace user/path placeholders; this file is NOT installed.
+[Unit]
+Description=forr_cat Jetson local REST API (safe default, AI shadow)
+After=network.target
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=REPLACE_WITH_NON_ROOT_USER
+Group=REPLACE_WITH_NON_ROOT_GROUP
+WorkingDirectory=/srv/forr_cat/jetson
+EnvironmentFile=/etc/forr-cat.env
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/srv/forr_cat/jetson/.venv/bin/python -m tools.run_api
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+KillSignal=SIGTERM
+KillMode=control-group
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/srv/forr_cat/jetson/data
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,6 +1,6 @@
 # FOR_CAT — toàn bộ mã nguồn hệ thống cho mèo ăn/uống
 
-Bản sao lưu ngày **12/11/2026**: Jetson Nano chạy AI CAT/DOG + FastAPI, ESP32-S3 điều khiển phần cứng, Flutter Web giám sát/điều khiển. Giữ lịch sử Git cũ; thư mục `archive/` chứa các lần phát triển và bàn giao trước đây.
+Bản sao lưu đầy đủ được đánh dấu **backup-2026-11-12-complete** (bổ sung source cũ sau bản đầu backup-2026-11-12). Ngày **12/11/2026**: Jetson Nano chạy AI CAT/DOG + FastAPI, ESP32-S3 điều khiển phần cứng, Flutter Web giám sát/điều khiển. Giữ lịch sử Git cũ; thư mục `archive/` chứa các lần phát triển và bàn giao trước đây. `archive/original_laptop_source/` giữ thêm các source riêng/có khác biệt trong thư mục dự án cũ trên laptop.
 
 | Thư mục | Nội dung |
 |---|---|
@@ -33,3 +33,4 @@ Xem [hướng dẫn khôi phục](docs/KHOI_PHUC_TU_GITHUB.md), [trạng thái p
 - Mạng ngoài/4G/5G: HTTPS Tailscale đã cấu hình; thiết bị phải có quyền trong tailnet và có Internet.
 
 Không đưa lên repo: mật khẩu/token/SSH key, `.env` thật, dump flash/NVS, SQLite lịch sử vận hành, ảnh/video camera cá nhân, dataset ảnh và bộ cài/SDK/venv/cache. Đây không phải các tệp mã nguồn. Nếu cần giữ dữ liệu vận hành riêng, hãy sao lưu riêng trước khi xóa máy.
+

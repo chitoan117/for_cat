@@ -1,6 +1,6 @@
 # ESP32 GPIO architecture — NOT HARDWARE VERIFIED
 
-`esp32/include/board_config.h` selects build-safe SIM or GENERIC_ESP32DEV profiles; `pins.h` holds only `UNASSIGNED=-1`. No pin is configured in firmware. Do not attach sensors or actuators based on a placeholder number.
+Defaultproduction`pins.h`all-1/outputgates0. DeliberateM4sensor-onlycandidateprofileenablesonlytest-targets,notphysicalGPIOPASS:4..13plusDS1302CLK16/DAT17/CE18. NormalHW_SAFEdoesnotinitializeperipherals;ASCIIselecteddiagnosticinitializesonlyitstarget. Servo/pumpremain-1;NoN16R8/PSRAMassumption. `M4_SENSOR_PIN_PROFILE.md` / `DS1302_BRINGUP.md`.
 
 | Interface | Required GPIO role | Verification before pin assignment |
 | --- | --- | --- |
@@ -9,7 +9,8 @@
 | JSN-SR04T water TRIG / ECHO | output / input | ECHO may be 5 V; level shift/divide |
 | Servo PWM | timed output | separate servo rail, safe startup and stop |
 | Pump MOSFET | digital output | 3.3 V gate drive, safe boot OFF, flyback protection |
-| I2C SDA / SCL | bidirectional open-drain | DS3231/SSD1306 voltage, pull-ups and addresses |
+| OLEDI2C SDA/SCL |GPIO8/9open-drain |3.3Vpull-ups/supplyandempiricaladdress; noRTC0x68expectation |
+| DS1302 CLK/DAT/CE |GPIO16output/17bidirectional/18output |3.3V/modulelabels/CH/WP;hostDATinputbeforereadfallingedge,powerOFFrewire |
 | Buzzer | output | drive transistor if needed; current limits |
 | Manual Feed button | input | safe pull-up/down, debounce and boot behavior |
 

@@ -3,8 +3,8 @@
 ## Authority and precedence
 
 1. `REFERENCE_ARCHITECTURE.md`: **one current hardware/system architecture**.
-2. `CURRENT_PROJECT_STATE.md`: **current maturity**; actual current counts301/3271/7/18/11 corroborated by `PRE_HARDWARE_FINAL_BASELINE.md`, `PRE_HARDWARE_RELEASE_CANDIDATE.md` and `.checks/summary.json`/quality logs.
-3. `PRE_HARDWARE_HANDOFF.md`: **handoff/freeze decision and next evidence**, not new functionality.
+2. `CURRENT_PROJECT_STATE.md`: **current maturity**; latest DS1302migration309Python/3451native/7vectors/46guards/18builds from `DS1302_MIGRATION_RESULT.md` and `.checks/summary.json`/quality logs. Earlier pre-hardware/quality/adaptation files are their dated checkpoints, not current RTC selection.
+3. `FINAL_OPENCODE_HANDOFF.md` / `DS1302_BRINGUP.md`: **current RTC wiring/commands/evidence boundary**. RTCchangedfromplannedDS3231toavailableDS1302duringM4; noI2C0x68RTCexpectation,GPIO16/17/18candidateonly,physicalvalidationpending.
 4. `UART_PROTOCOL.md` / shared golden CSV and code: frozen v1 wire contract; `API_V1_CONTRACT.md`: frontend API contract.
 5. Domain workflows/requirements are procedures/design evidence. They are not physical/data/model results.
 6. Phase/RC/audit checkpoints and `PROJECT_STATUS_CURRENT.md` are **HISTORICAL / NOT CURRENT**; old counts/“authoritative”/absence statements describe their original runs only.

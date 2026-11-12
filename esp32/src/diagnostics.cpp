@@ -9,6 +9,7 @@
 #include "m4/arduino_io.h"
 #include "m4/hx711.h"
 #include "m4/rtc.h"
+#include "m4/ds1302.h"
 #include "m4/ultrasonic.h"
 #include "m4/accessories.h"
 #include "m4/oled.h"
@@ -19,7 +20,7 @@ namespace {
 m4::ArduinoPins pins_io;
 m4::ArduinoI2C bus(pins_io);
 m4::Hx711 scale(pins_io);
-m4::Ds3231 rtc(bus);
+m4::Ds1302 rtc(pins_io); //current RTC; OLED/scanner alone useI2C
 m4::I2CScanner scanner(bus);
 m4::LevelSensor food(pins_io), water(pins_io);
 m4::ManualButton button(pins_io);
@@ -38,6 +39,30 @@ uint32_t last_report=0, last_measure=0, last_rtc=0;
 enum class AverageAction { NONE, RAW, TARE, CALIBRATE, VALIDATE };
 AverageAction average_action=AverageAction::NONE;
 double reference_mass=0;
+bool echo_level_acknowledged=false, buzzer_driver_acknowledged=false, scanner_running=false;
+unsigned scan_probes=0, scan_found=0;
+float reviewed_min_cm=M4_ULTRASONIC_MIN_CM, reviewed_max_cm=M4_ULTRASONIC_MAX_CM;
+
+const char* rtcResult() {
+  if (rtc.status.health==m4::Health::HEALTHY) return "HEALTHY";
+  if (rtc.status.health==m4::Health::NOT_CONFIGURED) return "NOT_CONFIGURED";
+  if (rtc.status.health==m4::Health::NOT_CONNECTED) return "NOT_CONNECTED";
+  if (rtc.status.reason==m4::Reason::CLOCK_HALTED) return "CLOCK_HALTED";
+  if (rtc.status.reason==m4::Reason::RTC_INVALID_TIME) return "INVALID_TIME";
+  return "IO_ERROR";
+}
+
+bool beginSelectedLevel() {
+#if M4_DIAGNOSTIC_MODE == 4
+  return food.distance.begin({m4::diagnosticPin(M4_FOOD_TRIG),m4::diagnosticPin(M4_FOOD_ECHO),
+                             reviewed_min_cm,reviewed_max_cm,30000,0.0343f});
+#elif M4_DIAGNOSTIC_MODE == 5
+  return water.distance.begin({m4::diagnosticPin(M4_WATER_TRIG),m4::diagnosticPin(M4_WATER_ECHO),
+                              reviewed_min_cm,reviewed_max_cm,30000,0.0343f});
+#else
+  return false;
+#endif
+}
 
 template<class T> void number(const m4::Reading<T>& value) {
   if (value.valid) protocolSerial().printf("%.6f",static_cast<double>(value.value));
@@ -47,9 +72,17 @@ void report() {
   auto& serial=protocolSerial();
   serial.printf("{\"mode\":\"%s\",\"monotonic_ms\":%lu,\"hardware_verified\":false,",
                 m4::diagnosticName(),static_cast<unsigned long>(snapshot.sampled_at_ms));
+  serial.printf("\"candidate_sensor_profile\":%s,\"echo_level_acknowledged\":%s,\"buzzer_driver_acknowledged\":%s,",
+                M4_SENSOR_BRINGUP ? "true":"false",echo_level_acknowledged ? "true":"false",buzzer_driver_acknowledged ? "true":"false");
   serial.printf("\"rtc_health\":\"%s\",\"rtc_epoch\":",m4::name(snapshot.rtc.health));
   if (snapshot.rtc_time.valid) serial.printf("%llu",static_cast<unsigned long long>(m4::epoch(snapshot.rtc_time.value)));
   else serial.print("null");
+  serial.printf(",\"rtc_type\":\"DS1302\",\"rtc_result\":\"%s\",\"rtc_reason\":\"%s\",\"rtc_utc\":",
+                rtcResult(),m4::name(rtc.status.reason));
+  if (snapshot.rtc_time.valid) {
+    const auto& time=snapshot.rtc_time.value;
+    serial.printf("\"%04u-%02u-%02u %02u:%02u:%02u\"",time.year,time.month,time.day,time.hour,time.minute,time.second);
+  } else serial.print("null");
   serial.printf(",\"weight_health\":\"%s\",\"weight_reason\":\"%s\",\"raw_counts\":",
                 m4::name(snapshot.load_cell.health),m4::name(snapshot.load_cell.reason)); number(snapshot.raw_weight);
   serial.print(",\"grams\":"); number(snapshot.grams);
@@ -87,7 +120,8 @@ void command(const char* text) {
   if (std::strcmp(text,"help")==0) {
     serial.println("M4 ASCII ONLY: status; avg N; tare N; cal GRAMS N; validate GRAMS N; "
                    "food-geometry FULL_CM EMPTY_CM; water-geometry FULL_CM EMPTY_CM; load; save YES; "
-                   "scan; set-utc YYYY-MM-DDTHH:MM:SSZ CONFIRM; buzz confirm|warning|fault. NO FEED/SERVO/PUMP commands.");
+                    "scan; set-utc YYYY-MM-DDTHH:MM:SSZ CONFIRM; range MIN_CM MAX_CM; echo-3v3 CONFIRM; buzzer-driver ACTIVE_HIGH CONFIRM; "
+                    "buzz confirm|warning|fault. NO FEED/SERVO/PUMP commands.");
   } else if (std::strcmp(text,"status")==0) { report();
   } else if (M4_DIAGNOSTIC_MODE==1 && std::sscanf(text,"avg %2u %c",&count,&extra)==1) {
     if (count>=1 && count<=64 && scale.startAverage(count)) average_action=AverageAction::RAW;
@@ -117,15 +151,35 @@ void command(const char* text) {
     const bool measured=calibration.hx711.valid() || calibration.food.valid() || calibration.water.valid();
     serial.println(measured && calibration_store.save(calibration) ? "CALIBRATION_SAVED not safety counters" : "REJECTED NOT_CALIBRATED_OR_NVS_ERROR");
   } else if (M4_DIAGNOSTIC_MODE==3 && std::strcmp(text,"scan")==0) {
-    serial.println(scanner.start() ? "I2C_SCAN_STARTED" : "CONFIGURATION_INVALID no I2C touched");
+    scanner_running=scanner.start(); scan_probes=scan_found=0;
+    serial.println(scanner_running ? "I2C_SCAN_STARTED" : "CONFIGURATION_INVALID no I2C touched");
+  } else if ((M4_DIAGNOSTIC_MODE==4 || M4_DIAGNOSTIC_MODE==5) && M4_SENSOR_BRINGUP && std::strcmp(text,"echo-3v3 CONFIRM")==0) {
+    // Operator acknowledges actual divider/level shifter review; not a voltage measurement.
+    echo_level_acknowledged=beginSelectedLevel();
+    serial.println(echo_level_acknowledged ? "ECHO_REVIEW_ACKNOWLEDGED acquisition enabled; NO CALIBRATION PASS" : "CONFIGURATION_INVALID");
+  } else if ((M4_DIAGNOSTIC_MODE==4 || M4_DIAGNOSTIC_MODE==5) && M4_SENSOR_BRINGUP && std::sscanf(text,"range %f %f %c",&full,&empty,&extra)==2) {
+    if (std::isfinite(full) && std::isfinite(empty) && full>0 && empty>full && empty<=400) {
+      reviewed_min_cm=full; reviewed_max_cm=empty;
+      if (echo_level_acknowledged) beginSelectedLevel();
+      serial.println("RANGE_CONFIGURED from operator/module review; not measured accuracy or geometry calibration");
+    } else serial.println("REJECTED RANGE_INVALID");
+  } else if (M4_DIAGNOSTIC_MODE==6 && M4_SENSOR_BRINGUP && std::strcmp(text,"buzzer-driver ACTIVE_HIGH CONFIRM")==0) {
+    buzzer_driver_acknowledged=buzzer.begin(m4::diagnosticPin(M4_BUZZER_PIN),true);
+    serial.println(buzzer_driver_acknowledged ? "ACTIVE_HIGH_BUZZER_DRIVER_ACKNOWLEDGED no pattern until buzz command" : "CONFIGURATION_INVALID");
   } else if (M4_DIAGNOSTIC_MODE==2 && std::strncmp(text,"set-utc ",8)==0) {
     unsigned year,month,day,hour,minute,second; char confirm[8]{};
     const int fields=std::sscanf(text,"set-utc %4u-%2u-%2uT%2u:%2u:%2uZ %7s %c",&year,&month,&day,&hour,&minute,&second,confirm,&extra);
     if (fields==7 && std::strcmp(confirm,"CONFIRM")==0 && year<=2199 && month<=12 && day<=31 &&
         hour<=23 && minute<=59 && second<=59 && rtc.set({static_cast<uint16_t>(year),static_cast<uint8_t>(month),
-        static_cast<uint8_t>(day),static_cast<uint8_t>(hour),static_cast<uint8_t>(minute),static_cast<uint8_t>(second)}))
-      serial.println("RTC_EXPLICIT_SET read back to validate (UTC)");
-    else serial.println("REJECTED RTC_INVALID_OR_BUS_ERROR");
+        static_cast<uint8_t>(day),static_cast<uint8_t>(hour),static_cast<uint8_t>(minute),static_cast<uint8_t>(second)},millis())) {
+      snapshot.rtc=rtc.status; snapshot.rtc_time=rtc.time;
+      serial.println("RTC_DS1302_EXPLICIT_SET READBACK_VALID UTC; original write-protect restored; not hardware accuracy PASS");
+      report();
+    }
+    else {
+      snapshot.rtc=rtc.status; snapshot.rtc_time=rtc.time;
+      serial.printf("REJECTED RTC_DS1302_SET result=%s reason=%s\r\n",rtcResult(),m4::name(rtc.status.reason));
+    }
   } else if (M4_DIAGNOSTIC_MODE==6 && std::strncmp(text,"buzz ",5)==0) {
     const char* pattern=text+5;
     bool valid=std::strcmp(pattern,"confirm")==0 || std::strcmp(pattern,"warning")==0 || std::strcmp(pattern,"fault")==0;
@@ -155,26 +209,35 @@ void setup() {
                           "NOT_HARDWARE_VERIFIED; ASCII diagnostics, NOT UART v1\r\n",m4::diagnosticName(),M4_PINS_REVIEWED);
   const auto loaded=calibration_store.load(calibration); copyCalibration();
   protocolSerial().printf("CALIBRATION_LOAD code=%u; missing/invalid=NOT_CALIBRATED\r\n",static_cast<unsigned>(loaded));
+  if (M4_SENSOR_BRINGUP) protocolSerial().println("CANDIDATE SENSOR PINS ONLY; GPIO14/15 UNASSIGNED; PSRAM NOT USED; NO M4 PASS");
+#if M4_DIAGNOSTIC_MODE == 2
+  protocolSerial().printf("RTC=DS1302 CLK=%d DAT/IO=%d CE/RST=%d; 3-WIRE NOT I2C; BOOT READ ONLY; UTC2000-2099\r\n",
+                          M4_RTC_CLK,M4_RTC_DAT,M4_RTC_CE);
+#elif M4_DIAGNOSTIC_MODE == 3
+  protocolSerial().println("I2C=OLED/future peripherals; OLED candidate0x3C; DS1302 is NOT I2C, no RTC0x68 expectation");
+#endif
   const auto now=millis();
 #if M4_DIAGNOSTIC_MODE == 1
   scale.begin({m4::diagnosticPin(M4_HX711_DOUT),m4::diagnosticPin(M4_HX711_SCK),500},now);
-#elif M4_DIAGNOSTIC_MODE == 2 || M4_DIAGNOSTIC_MODE == 3 || M4_DIAGNOSTIC_MODE == 6
+#elif M4_DIAGNOSTIC_MODE == 2
+  rtc.begin({m4::diagnosticPin(M4_RTC_CLK),m4::diagnosticPin(M4_RTC_DAT),m4::diagnosticPin(M4_RTC_CE)});
+  rtc.poll(now); snapshot.rtc=rtc.status; snapshot.rtc_time=rtc.time;
+#elif M4_DIAGNOSTIC_MODE == 3 || M4_DIAGNOSTIC_MODE == 6
   bus.begin(m4::diagnosticPin(M4_I2C_SDA),m4::diagnosticPin(M4_I2C_SCL),25);
-#if M4_DIAGNOSTIC_MODE == 2
-  rtc.begin();
-#elif M4_DIAGNOSTIC_MODE == 3
-  scanner.start();
+#if M4_DIAGNOSTIC_MODE == 3
+  scanner_running=scanner.start();
 #else
   oled.begin(M4_OLED_ADDRESS,M4_OLED_HEIGHT);
   button.begin({m4::diagnosticPin(M4_BUTTON_PIN),static_cast<m4::Pull>(M4_BUTTON_PULL),M4_BUTTON_ACTIVE_LOW!=0,40,1000},now);
-  buzzer.begin(m4::diagnosticPin(M4_BUZZER_PIN));
+  if (!M4_SENSOR_BRINGUP) buzzer.begin(m4::diagnosticPin(M4_BUZZER_PIN));
+  else protocolSerial().println("BUZZER NOT_CONFIGURED until hardware type/current/driver reviewed and buzzer-driver ACTIVE_HIGH CONFIRM");
 #endif
 #elif M4_DIAGNOSTIC_MODE == 4
-  food.distance.begin({m4::diagnosticPin(M4_FOOD_TRIG),m4::diagnosticPin(M4_FOOD_ECHO),
-                       M4_ULTRASONIC_MIN_CM,M4_ULTRASONIC_MAX_CM,30000,0.0343f});
+  if (!M4_SENSOR_BRINGUP) beginSelectedLevel();
+  else protocolSerial().println("ECHO REVIEW REQUIRED: GPIO7 must be <=3.3V via divider/level shifter; then echo-3v3 CONFIRM");
 #elif M4_DIAGNOSTIC_MODE == 5
-  water.distance.begin({m4::diagnosticPin(M4_WATER_TRIG),m4::diagnosticPin(M4_WATER_ECHO),
-                        M4_ULTRASONIC_MIN_CM,M4_ULTRASONIC_MAX_CM,30000,0.0343f});
+  if (!M4_SENSOR_BRINGUP) beginSelectedLevel();
+  else protocolSerial().println("ECHO REVIEW REQUIRED: GPIO11 must be <=3.3V via divider/level shifter; module blind zone NOT calibrated; then echo-3v3 CONFIRM");
 #endif
   servo.safeStop(); pump.off(); shadow_water.boot();
 }
@@ -207,7 +270,16 @@ void loop() {
   snapshot.rtc=rtc.status; snapshot.rtc_time=rtc.time;
 #elif M4_DIAGNOSTIC_MODE == 3
   uint8_t address; bool found;
-  if (scanner.tick(address,found) && found) protocolSerial().printf("I2C_ACK address=0x%02X identity NOT_VERIFIED\r\n",address);
+  if (scanner_running) {
+    if (scanner.tick(address,found)) {
+      ++scan_probes;
+      if (found) { ++scan_found; protocolSerial().printf("I2C_ACK address=0x%02X identity NOT_VERIFIED\r\n",address); }
+    } else {
+      scanner_running=false;
+      protocolSerial().printf("I2C_SCAN_COMPLETE probes=%u responding=%u result=%s (ACK is not module identity)\r\n",
+                              scan_probes,scan_found,scan_found ? "RESPONSES_OBSERVED":"NOT_CONNECTED");
+    }
+  }
 #elif M4_DIAGNOSTIC_MODE == 4 || M4_DIAGNOSTIC_MODE == 5
   auto& selected=M4_DIAGNOSTIC_MODE==4 ? food : water;
   if (!selected.distance.busy() && static_cast<uint32_t>(now-last_measure)>=500) {

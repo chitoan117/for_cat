@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 4
+names: ['Cats', 'empty-bowl', 'face', 'food_full']
+
+roboflow:
+  workspace: 1-sndqv
+  project: catfood-i8ggf
+  version: 2
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/1-sndqv/catfood-i8ggf/dataset/2

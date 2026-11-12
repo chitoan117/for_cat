@@ -4,7 +4,10 @@
 // Human monitor/boot metadata only. GET_STATUS/UART v1 payloads are NOT expanded.
 namespace build_info {
 constexpr const char* firmware_version = "0.1.0-m3-pack1";
-#if defined(FORR_BOARD_S3)
+#if defined(FORR_REAL_S3_NO_PSRAM)
+constexpr const char* board = "ESP32_S3_FLASH16MB_PSRAM_NOT_USED";
+constexpr const char* profile = "esp32s3_16mb_no_psram_hw_safe_uart";
+#elif defined(FORR_BOARD_S3)
 constexpr const char* board = "GENERIC_ESP32_S3_N16R8_COMPILE_SURROGATE";
 #if defined(SIMULATED_SENSORS)
 constexpr const char* profile = "esp32s3_n16r8_sim";

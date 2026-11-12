@@ -1,5 +1,7 @@
 # Jetson first-day procedure — all physical results pending
 
+> Historical initial sequence; actual user-reported Nano2GB/webcam/S3/protocol facts now exist in `M3_PHYSICAL_VALIDATION_RECORD.md`. Current system Python3.6.9 means modern backend setup commands below are BLOCKED until isolated-runtime review, not permission to replace Python/JetPack. Use independent `bringup` utilities and `REAL_HARDWARE_NEXT_STEPS.md`. Current camera is Generic Web Camera4a54:5233, not a presumed Logitech brand.
+
 1. Photograph exact Jetson board/carrier and markings.
 2. Identify Nano variant/revision and RAM size; do not infer it from a seller label.
 3. Verify the correct supply against that exact board documentation; no final PSU rating assumed here.

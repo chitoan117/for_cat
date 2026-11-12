@@ -1,0 +1,10 @@
+from pathlib import Path
+r=Path('D:/Agent_Cat/diagnostics/scale_stability_20261106');r.mkdir(exist_ok=True)
+base=Path('D:/Agent_Cat/diagnostics/pcb_pin_fix_20261106/recover_cat_idle.py').read_text()
+s=base.replace('/evidence/cat_gate_check_20261106','/evidence/scale_stability_20261106')
+s=s.replace('for _ in range(6):','for _ in range(45):')
+s=s.replace("d=status();zero.append(d['weight']['grams']);time.sleep(1)","d=status();zero.append(d['weight']['grams']);time.sleep(1)")
+s=s.replace("assert all(abs(g)<1 for g in zero[-4:]),'Zero is not stable; automatic mode stays exited'", "assert all(abs(g)<1.5 for g in zero[5:]),'Zero drifted beyond1.5g during45s; automatic mode stays exited'")
+s=s.replace("'direct_open_close_feed_commands_sent':False}","'direct_open_close_feed_commands_sent':False,'owner_confirmed_empty_bowl':True,'stationary_observation_seconds':45}")
+(r/'check_scale.py').write_text(s)
+print('Prepared owner-confirmed retare and45s stationary observation; no servo profile changes.')

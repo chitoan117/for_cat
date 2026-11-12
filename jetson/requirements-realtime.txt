@@ -1,0 +1,3 @@
+# Same backend/runtime, plus explicit network WebSocket support for uvicorn.
+-r requirements-runtime.txt
+websockets==15.0.1

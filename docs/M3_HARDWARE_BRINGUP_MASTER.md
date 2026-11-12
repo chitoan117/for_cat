@@ -106,6 +106,8 @@ Commands use the real project root (`$HOME/forr_cat` on Jetson) and actual obser
 - **NEXT GATE:** J; weight consumption/feeding still unvalidated.
 
 ## J — DS3231
+
+> HISTORICAL plannedRTCsection,notcurrentwiring. RTC hardware changed from planned DS3231 to available DS1302 during M4 physical bring-up. Current `diag_rtc`CLK16/DAT17/CE18 and `DS1302_BRINGUP.md`;noI2C0x68RTCexpectation. Originalplanbelowretained,notphysicalevidence.
 - **PREREQUISITES:** H and approved bounded RTC/I2C test image; battery/module identified.
 - **CONNECTIONS:** reviewed I2C/pull-ups/backup-cell arrangement, actuators disconnected.
 - **COMMANDS:** future image scan/read/set commands only (not supplied now), serial monitor; no Jetson i2cdetect proof for an ESP32-wired RTC.

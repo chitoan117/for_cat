@@ -17,4 +17,4 @@ Manual test order:
 6. Recheck several different known masses within the load cell's actual rated/mechanical range, including remove/reapply/tare; record expected, measured, absolute/relative error and repeatability.
 7. Unplug/induce a safe sensor fault and require timeout/FAULT and no guessed grams/actuator intent.
 
-PASS: raw/stable/tare/calibration/repeatability/error satisfy the pre-recorded acceptance tolerance and fault handling is observed. FAIL: timeouts, sign/scale inconsistency, drift beyond agreed limit, clipping, overload or fault shown as healthy. Next gate: DS3231, then later measured feeding fusion only after integrated validation.
+PASSrequiresactualstable/tare/reference/repeatability/errorswithinpre-recordedtoleranceandfaults;FAILtimeout/rail/drift/overload/falsehealthy. NextRTCgateis **DS1302** (`DS1302_BRINGUP.md`),notearlierplannedDS3231;feedfusionrequiresactualintegratedevidence,outputsdisablednow.

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="620" viewBox="0 0 1920 1240">
+ <title>Proposed food interaction ROI for owner supplied1920x1080 image — schematic only</title>
+ <desc>Approximate scene positions visually estimated from the user attachment. No real CAT or DOG detection. This is not an annotated copy of the original image.</desc>
+ <defs><clipPath id="frame"><rect width="1920" height="1080"/></clipPath></defs>
+ <rect width="1920" height="1240" fill="#152330"/>
+ <g clip-path="url(#frame)">
+  <rect width="1920" height="1080" fill="#afb6b8"/>
+  <path d="M0 450L1920 250M0 810L1920 950M700 570L1450 1080" stroke="#848d91" stroke-width="7"/>
+  <rect x="700" y="0" width="150" height="540" fill="#42484b"/>
+  <rect x="1360" y="0" width="100" height="240" fill="#42484b"/>
+  <path d="M290 0L420 390Q400 510 150 550" fill="none" stroke="#737e84" stroke-width="38"/>
+  <rect x="875" y="420" width="225" height="325" rx="60" fill="#456b50"/>
+  <rect x="885" y="310" width="180" height="110" rx="30" fill="#3e765b"/>
+  <rect x="890" y="490" width="180" height="205" rx="18" fill="#d5d8c9"/>
+  <path d="M1290 678L1885 724" stroke="#be5754" stroke-width="25"/>
+  <path d="M1880 370Q2020 700 1530 1080" fill="none" stroke="#29343a" stroke-width="22"/>
+  <ellipse cx="600" cy="1130" rx="620" ry="300" fill="#5e6f79" stroke="#e0e5e8" stroke-width="25"/>
+  <rect x="0" y="821" width="1229" height="259" fill="#49aaff" fill-opacity=".13" stroke="#0076df" stroke-width="7" stroke-dasharray="16 10"/>
+  <rect x="38.4" y="432" width="1401.6" height="648" fill="#ffca28" fill-opacity=".12" stroke="#ffe14c" stroke-width="9"/>
+  <rect x="50" y="445" width="800" height="80" fill="#152330" fill-opacity=".85"/>
+  <text x="75" y="495" font-family="sans-serif" font-size="32" fill="#ffe14c">CANDIDATE INTERACTION ROI: .02,.40,.75,1.00</text>
+  <rect x="60" y="850" width="710" height="65" fill="#152330" fill-opacity=".85"/>
+  <text x="80" y="895" font-family="sans-serif" font-size="30" fill="#81c5ff">Visible bowl region — partly outside image</text>
+  <text x="1150" y="355" font-family="sans-serif" font-size="29" fill="#14202a">Bottle/background are NOT CAT/DOG detections</text>
+ </g>
+ <text x="25" y="1130" font-family="sans-serif" font-size="30" fill="white">SCHEMATIC ONLY — estimated from supplied photo, not a camera inference result.</text>
+ <text x="25" y="1180" font-family="sans-serif" font-size="28" fill="#ffe14c">FULL_FRAME remains default. Candidate ROI needs real animal bounding-box review.</text>
+</svg>

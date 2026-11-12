@@ -8,7 +8,8 @@ enum class Health : uint8_t {
 };
 enum class Reason : uint8_t {
   NONE, CONFIGURATION_INVALID, TIMEOUT, BUS_ERROR, INVALID_DATA,
-  NOT_CALIBRATED, GEOMETRY_INVALID, RANGE_INVALID, ACTUATORS_DISABLED
+   NOT_CALIBRATED, GEOMETRY_INVALID, RANGE_INVALID, ACTUATORS_DISABLED,
+   CLOCK_HALTED, RTC_INVALID_TIME, RTC_IO_ERROR, WRITE_PROTECTED, READBACK_MISMATCH, NO_RESPONSE
 };
 inline const char* name(Health health) {
   switch (health) {
@@ -31,6 +32,12 @@ inline const char* name(Reason reason) {
     case Reason::NOT_CALIBRATED: return "NOT_CALIBRATED";
     case Reason::GEOMETRY_INVALID: return "GEOMETRY_INVALID";
     case Reason::RANGE_INVALID: return "RANGE_INVALID";
+    case Reason::CLOCK_HALTED: return "CLOCK_HALTED";
+    case Reason::RTC_INVALID_TIME: return "INVALID_TIME";
+    case Reason::RTC_IO_ERROR: return "IO_ERROR";
+    case Reason::WRITE_PROTECTED: return "WRITE_PROTECTED";
+    case Reason::READBACK_MISMATCH: return "READBACK_MISMATCH";
+    case Reason::NO_RESPONSE: return "NO_RESPONSE";
     default: return "ACTUATORS_DISABLED";
   }
 }

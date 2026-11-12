@@ -1,5 +1,7 @@
 # Final pre-hardware handoff — forr_cat
 
+> HISTORICAL PRE-HARDWARE HANDOFF cutoff. Current user-supplied physical M3 facts supersede broad NOT VERIFIED claims only in their named scopes: `M3_PHYSICAL_VALIDATION_RECORD.md` / `CURRENT_PROJECT_STATE.md`. Continue via `REAL_HARDWARE_NEXT_STEPS.md`; Python3.6 and measured no-PSRAM profile now require the new deploy/bring-up path. No old host result is retroactively a physical PASS.
+
 **M2 — PRE-HARDWARE SOFTWARE CANDIDATE.** Current architecture only: normal USB webcam → Jetson Nano → USB serial → ESP32-S3 N16R8 candidate → sensors/UI/future gated servo/pump; existing Flutter/Web ↔ REST ↔ Jetson. AI belongs on Jetson; ESP32-S3 is final local actuator authority. Actual board/memory/USB/pins are unverified.
 
 ## Implemented and bounded evidence

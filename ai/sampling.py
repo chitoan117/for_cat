@@ -11,9 +11,12 @@ def fingerprint(image) -> int:
 
 
 class SamplingPolicy:
-    def __init__(self, interval=1.0, minimum_spacing=0.5, near_distance=3):
+    def __init__(self, interval=1.0, minimum_spacing=0.5, near_distance=3, max_samples=1000):
         if any(not math.isfinite(x) for x in (interval, minimum_spacing)) or interval <= 0 or minimum_spacing < 0 or not 0 <= near_distance <= 16:
             raise ValueError("invalid sampling policy")
+        if type(max_samples) is not int or not 1 <= max_samples <= 10000:
+            raise ValueError("invalid sampling frame budget")
+        self.max_samples = max_samples
         self.spacing = max(interval, minimum_spacing)
         self.next_at = 0.0
         self.last_at = -1.0
@@ -36,7 +39,7 @@ class SamplingPolicy:
         if sha in self.hashes:
             self.duplicates += 1
             return None
-        if len(self.hashes) >= 1000:
+        if len(self.hashes) >= self.max_samples:
             raise ValueError("sampling frame budget exhausted")
         self.hashes.add(sha)
         if perceptual is not None:

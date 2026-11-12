@@ -1,0 +1,2 @@
+# FOR_CAT ESP32-S3 USB-UART only. Do not let ModemManager probe this board.
+ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d3", ATTRS{serial}=="5C85066678", ENV{ID_MM_DEVICE_IGNORE}="1", ENV{ID_MM_PORT_IGNORE}="1"

@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 7
+names: ['Cat Drinking', 'Cat eating', 'Cat happy', 'Cat vs cat', 'Cat vs dog', 'Cat vs human', 'Cat vs object']
+
+roboflow:
+  workspace: ake-lhlow
+  project: cat-behavier-hwzad
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/ake-lhlow/cat-behavier-hwzad/dataset/1

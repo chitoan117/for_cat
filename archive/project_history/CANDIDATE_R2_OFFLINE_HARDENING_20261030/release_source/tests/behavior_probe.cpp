@@ -1,0 +1,3 @@
+#include "owner_behavior.h"
+#include <iostream>
+int main(){auto roi=forcat::food_roi::parseConfig("{\"enabled\":true,\"calibrated\":true,\"review_id\":\"SYNTHETIC\",\"x1\":0.25,\"y1\":0.25,\"x2\":0.75,\"y2\":0.75}");forcat::owner_behavior::Policy p(roi);bool fired=false;for(unsigned n=0;n<4;++n){forcat::owner_behavior::Input i;i.now=i.captured=1000+n*500;i.sequence=4-n;i.identity=forcat::owner_behavior::Identity::OWNER_CAT;i.identity_source="SYNTHETIC_OWNER_FIXTURE";i.simulation=true;i.confidence=.95;i.distance_valid=true;i.distance=15;fired=fired||p.update(i).would_request_35g;}std::cout<<"REGRESSED_AI_SEQUENCE would_request_35g="<<fired<<" source=SIMULATED\n";}

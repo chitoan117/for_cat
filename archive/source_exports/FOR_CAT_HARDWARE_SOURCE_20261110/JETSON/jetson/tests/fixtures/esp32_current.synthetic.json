@@ -1,0 +1,20 @@
+{
+  "mode": "diag_current_hardware", "monotonic_ms": 1000,
+  "hardware_verified": false, "actuator_outputs_enabled": 0, "physical_pump_on": false,
+  "oled_health": "HEALTHY", "weight_health": "NOT_CALIBRATED", "approach_health": "NOT_CALIBRATED",
+  "water_health": "NOT_CALIBRATED", "raw_counts": -671318, "hx711_installed": true,
+  "approach_echo_ack": true, "water_echo_ack": true, "approach_distance_cm": 25.0,
+  "water_distance_cm": 60.0, "motion_input_configured": true, "motion": false,
+  "button_health": "HEALTHY", "synthetic_fixture_only": true,
+  "current_hardware": {
+    "pir_transition_count": 0, "pir_last_transition_ms": null, "weight_calibrated": false,
+    "approach_distance_valid": true, "approach_timeout_count": 0,
+    "operational_water_distance_valid": true, "operational_water_timeout_count": 0,
+    "servo_armed": false, "pump_armed": false, "auto_feed": false, "auto_water": false,
+    "servo_state": "PWM_NOT_ATTACHED_CLOSE_PHYSICAL_UNVERIFIED",
+    "pump_state": "OUTPUT_NOT_ENABLED_PHYSICAL_OFF_UNVERIFIED",
+    "manual_button_request_count": 0, "button_press_count": 0, "button_gpio": 21,
+    "button_raw_level": 1, "button_debounced_level": 1, "button_pressed": false,
+    "button_last_press_ms": null, "button_debounce_ms": 40, "button_actuator_blocked": true
+  }
+}

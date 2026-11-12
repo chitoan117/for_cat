@@ -1,0 +1,161 @@
+import 'package:flutter/material.dart';
+
+import 'feeder_backend.dart';
+import 'ui_widgets.dart';
+
+class WaterControlPanel extends StatelessWidget {
+  final FeederBackend backend;
+  const WaterControlPanel({super.key, required this.backend});
+  Future<void> enable(BuildContext context) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: const Text('Bật chức năng nước?'),
+        content: const Text(
+          'Bơm có thể chạy khi cảm biến báo thiếu nước. Chỉ bật khi đã kiểm tra đường ống và có thể theo dõi.\n\nNếu nước vẫn tự chảy khi motor tắt, hãy xử lý đường ống trước.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(c, false),
+            child: const Text('Hủy'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(c, true),
+            child: const Text('Xác nhận bật'),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) await backend.setWaterEnabled(true, confirmed: true);
+  }
+
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(
+    animation: backend,
+    builder: (context, _) {
+      final s = backend.waterControl;
+      final fresh = s?['fresh'] == true && s?['supported'] == true;
+      final enabled = fresh && s?['enabled'] == true;
+      final request = s?['request'];
+      final requestState = request is Map ? request['status'] : null;
+      final pending = requestState == 'PENDING' || requestState == 'DISPATCHED';
+      final fault = fresh && s?['fault'] == true;
+      final canEnable =
+          fresh &&
+          s?['can_enable'] == true &&
+          !enabled &&
+          !pending &&
+          !backend.waterBusy &&
+          !backend.isMock;
+      final label = !fresh
+          ? 'Chưa có kết nối thiết bị'
+          : fault
+          ? 'Đã dừng do lỗi'
+          : enabled
+          ? (s?['running'] == true ? 'Đang bơm' : 'Đang theo dõi mức nước')
+          : 'Đang tắt';
+      return AppCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.water_drop_outlined, color: appBlue),
+                const SizedBox(width: 10),
+                const Expanded(
+                  child: Text(
+                    'Cấp nước chén',
+                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                  ),
+                ),
+                Text(
+                  !fresh
+                      ? 'Chưa rõ'
+                      : enabled
+                      ? 'Đang bật'
+                      : 'Đang tắt',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xff655b57),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            if (label != 'Đang tắt')
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            Text(
+              enabled
+                  ? 'D1 từ 5,7 cm: bơm. D1 đến 5,5 cm: dừng.'
+                  : 'Đang tắt cấp nước tự động cho chén.',
+              style: const TextStyle(fontSize: 13),
+            ),
+            if (enabled)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  'Chén: ${cmText((s?['d1_cm'] as num?)?.toDouble())}',
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                FilledButton.icon(
+                  onPressed: canEnable ? () => enable(context) : null,
+                  icon: const Icon(Icons.water_drop_outlined),
+                  label: const Text('On'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: !backend.waterBusy && !backend.isMock
+                      ? () => backend.setWaterEnabled(false)
+                      : null,
+                  icon: const Icon(Icons.stop_circle_outlined),
+                  label: const Text('Off'),
+                ),
+              ],
+            ),
+            if (pending || backend.waterBusy)
+              const Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Text(
+                  'Đang chờ ESP32 xác nhận…',
+                  style: TextStyle(fontSize: 12),
+                ),
+              ),
+            if (request is Map &&
+                [
+                  'REJECTED',
+                  'TIMEOUT',
+                  'EXPIRED',
+                  'CANCELLED',
+                ].contains(requestState))
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  request['note']?.toString() ?? 'Chưa áp dụng thao tác.',
+                  style: const TextStyle(fontSize: 12, color: Colors.brown),
+                ),
+              ),
+            if (backend.waterError != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  backend.waterError!,
+                  style: const TextStyle(fontSize: 12, color: Colors.brown),
+                ),
+              ),
+          ],
+        ),
+      );
+    },
+  );
+}

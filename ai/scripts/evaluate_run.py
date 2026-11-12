@@ -9,7 +9,7 @@ def main():
     p=argparse.ArgumentParser(description="Evaluate supplied annotations/predictions only; never select a production threshold")
     p.add_argument("action",choices=("frames","events","sweep","shadow"))
     p.add_argument("--input",type=Path,required=True)
-    p.add_argument("--task",choices=("identity","behavior"),default="identity")
+    p.add_argument("--task",choices=("identity","behavior","behavior_v2"),default="identity")
     p.add_argument("--thresholds",type=float,nargs="+",default=[0.25,0.5,0.75])
     p.add_argument("--start-tolerance",type=float,default=1)
     p.add_argument("--end-tolerance",type=float,default=1)

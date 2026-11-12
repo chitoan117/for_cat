@@ -1,0 +1,47 @@
+{
+  "source": "SIMULATED",
+  "execution_context": "OFFLINE_TEST_ONLY",
+  "physical_pass": false,
+  "controller": {
+    "scenario": "stale_hx",
+    "state": "FAULT",
+    "reason": "HX711_NOT_READY",
+    "target_grams": 35,
+    "dispensed_grams": 0,
+    "observed_added_grams": 0,
+    "final_status": "ERROR",
+    "fake_opens": 1,
+    "source": "SIMULATED",
+    "physical_pass": false
+  },
+  "ack": {
+    "request_id": 1,
+    "state": "PENDING"
+  },
+  "final": {
+    "request_id": 1,
+    "state": "ERROR"
+  },
+  "sessions": [
+    {
+      "session_id": "feed-1",
+      "cat_identity": "UNKNOWN",
+      "food_type": null,
+      "requested_grams": null,
+      "dispensed_grams": null,
+      "weight_before_eating": null,
+      "weight_after_eating": null,
+      "estimated_consumed_grams": null,
+      "requested_at": "2026-10-29T17:57:24.144169Z",
+      "dispense_started_at": null,
+      "dispense_finished_at": null,
+      "eating_started_at": null,
+      "eating_finished_at": null,
+      "result": "ERROR",
+      "reject_reason": null,
+      "source": "MOCK",
+      "approach_delay_seconds": null,
+      "repeat_visits": null
+    }
+  ]
+}

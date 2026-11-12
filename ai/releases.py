@@ -10,6 +10,7 @@ from ai.artifacts import read_json, relative_file, write_json
 from ai.dataset import ID_PATTERN, digest, image_integrity, load_manifest, validate_splits
 from ai.sampling import fingerprint
 from ai.session import SessionManifest
+from ai.label_schema import BEHAVIOR_V2, task_label
 
 
 def leakage(root, rows, splits, *, near_limit=256, near_distance=3):
@@ -33,6 +34,10 @@ def leakage(root, rows, splits, *, near_limit=256, near_distance=3):
     unknown = set(memberships)-{r["session_id"] for r in rows}
     if unknown:
         failures.append({"code": "SPLIT_SESSION_MISSING", "sessions": sorted(unknown)})
+    from ai.session_groups import source_groups
+    for members in source_groups([row for row in rows if row.get("schema_version") == 2]).values():
+        if len(set().union(*(memberships[member] for member in members))) > 1:
+            failures.append({"code": "SESSION_GROUP_LEAKAGE", "sessions": members})
     fingerprints, warnings = [], []
     try:
         from PIL import Image
@@ -57,16 +62,30 @@ def leakage(root, rows, splits, *, near_limit=256, near_distance=3):
 
 
 def acceptance(root, *, task="identity", stage="PILOT_DATASET", min_sessions=2,
-               required_labels=None, near_limit=256):
-    if stage not in ("PILOT_DATASET", "TRAINING_CANDIDATE", "TEST_CANDIDATE") or task not in ("identity", "behavior") or min_sessions < 2:
+               required_labels=None, near_limit=256, near_review=None):
+    if stage not in ("PILOT_DATASET", "TRAINING_CANDIDATE", "TEST_CANDIDATE") or task not in ("identity", "behavior", "behavior_v2") or min_sessions < 2:
         raise ValueError("invalid acceptance policy")
-    required = required_labels or (["OWNER_CAT", "OTHER_CAT", "OTHER_OBJECT"] if task=="identity" else ["EATING", "DRINKING", "OTHER"])
-    allowed = {"OWNER_CAT","OTHER_CAT","OTHER_OBJECT"} if task=="identity" else {"EATING","DRINKING","OTHER"}
+    if not 0 <= near_limit <= 1000:
+        raise ValueError("invalid legacy near-limit policy")
+    defaults = ["OWNER_CAT", "OTHER_CAT", "OTHER_OBJECT"] if task == "identity" else list(BEHAVIOR_V2) if task == "behavior_v2" else ["EATING", "DRINKING", "OTHER"]
+    required = required_labels or defaults
+    allowed = set(defaults)
     if not isinstance(required,list) or not required or not set(required).issubset(allowed):
         raise ValueError("invalid required class coverage policy")
     rows, errors = load_manifest(Path(root))
     if not rows and not errors:
         return {"status": "DATASET_NOT_AVAILABLE", "samples": 0, "failures": [], "warnings": []}
+    if task == "behavior_v2" and stage != "PILOT_DATASET" and (Path(root)/"sources.jsonl").is_file():
+        from ai.behavior_readiness import readiness
+        full = readiness(root, near_review=near_review)
+        if full["independent_source_groups"] < min_sessions:
+            full["failures"].append("MIN_SESSIONS_POLICY_NOT_MET")
+        if required_labels is not None and set(required_labels) != set(BEHAVIOR_V2):
+            full["failures"].append("VIDEO_V2_REQUIRES_ALL_THREE_TRAINABLE_CLASSES")
+        return {"status": stage if not full["failures"] else "REJECTED", "task": task,
+                "samples": len(rows), "usable_samples": full["usable_trainable_samples"],
+                "class_counts": {name: full["per_label"][name]["usable_samples"] for name in BEHAVIOR_V2},
+                "failures": full["failures"], "warnings": full["warnings"], "full_video_readiness": full}
     if len(rows) > 10000:
         return {"status": "REJECTED", "failures": ["FULL_VALIDATION_BUDGET_EXCEEDED"], "warnings": []}
     failures, warnings = list(errors), []
@@ -77,8 +96,8 @@ def acceptance(root, *, task="identity", stage="PILOT_DATASET", min_sessions=2,
                 failures.append(f"SAMPLE_INTEGRITY:{row['sample_id']}")
         except (OSError, ValueError):
             failures.append(f"SAMPLE_PATH_OR_HASH:{row['sample_id']}")
-    usable = [r for r in rows if r["usable"] and r[f"{task}_label"] in required]
-    counts = Counter(r[f"{task}_label"] for r in usable)
+    usable = [r for r in rows if r["usable"] and task_label(r, task) in required]
+    counts = Counter(task_label(r, task) for r in usable)
     warnings.extend(f"CLASS_MISSING:{label}" for label in required if not counts[label])
     if len({r["session_id"] for r in usable}) < min_sessions:
         warnings.append("MULTIPLE_USABLE_SESSIONS_REQUIRED")
@@ -97,7 +116,7 @@ def acceptance(root, *, task="identity", stage="PILOT_DATASET", min_sessions=2,
         warnings.append("NEAR_DUPLICATE_CHECK_INCOMPLETE")
     if stage != "PILOT_DATASET":
         for name in ("train", "validation", "test"):
-            labels = {r[f"{task}_label"] for r in usable if r["session_id"] in set(splits.get(name, []))}
+            labels = {task_label(r, task) for r in usable if r["session_id"] in set(splits.get(name, []))}
             if not set(required).issubset(labels):
                 failures.append(f"SPLIT_CLASS_COVERAGE:{name}")
         assigned = set().union(*(set(splits.get(name, [])) for name in ("train", "validation", "test")))
@@ -123,7 +142,7 @@ def create_release(root, version, output, *, apply=False, **policy):
     if validate_splits(splits) and any("structure" in e for e in validate_splits(splits)):
         splits={"train":[],"validation":[],"test":[]}
     result = {"schema_version": 1, "dataset_version": version, "created_at": datetime.now(timezone.utc).isoformat(),
-        "label_schema_version": 1, "session_count": len({r["session_id"] for r in rows}), "sample_count": len(rows),
+        "label_schema_version": 2 if policy.get("task") == "behavior_v2" else 1, "session_count": len({r["session_id"] for r in rows}), "sample_count": len(rows),
         "split_counts": {name: sum(r["session_id"] in sessions for r in rows) for name, sessions in splits.items()},
         "class_counts": {task: dict(Counter(r[f"{task}_label"] or "MISSING" for r in rows)) for task in ("identity", "behavior")},
         "source_hashes": sorted({r["source_hash"] for r in rows}), "splits": splits,

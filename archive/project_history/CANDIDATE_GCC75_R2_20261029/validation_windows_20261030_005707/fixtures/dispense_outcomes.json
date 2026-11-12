@@ -1,0 +1,52 @@
+{
+  "nominal": {
+    "scenario": "nominal",
+    "state": "COMPLETE",
+    "target_grams": 35,
+    "dispensed_grams": 35,
+    "source": "SIMULATED",
+    "physical_pass": false
+  },
+  "overshoot": {
+    "scenario": "overshoot",
+    "state": "FAULT",
+    "reason": "TARGET_OVERSHOOT",
+    "source": "SIMULATED",
+    "physical_pass": false
+  },
+  "TIMEOUT": {
+    "scenario": "TIMEOUT",
+    "state": "FAULT",
+    "reason": "MAX_TIME_REACHED",
+    "source": "SIMULATED",
+    "physical_pass": false
+  },
+  "HX_TIMEOUT": {
+    "scenario": "HX_TIMEOUT",
+    "state": "FAULT",
+    "reason": "HX711_NOT_READY",
+    "source": "SIMULATED",
+    "physical_pass": false
+  },
+  "INVALID": {
+    "scenario": "INVALID",
+    "state": "FAULT",
+    "reason": "HX711_NOT_READY",
+    "source": "SIMULATED",
+    "physical_pass": false
+  },
+  "DISCONNECT": {
+    "scenario": "DISCONNECT",
+    "state": "FAULT",
+    "reason": "ABORTED",
+    "source": "SIMULATED",
+    "physical_pass": false
+  },
+  "NO_PROGRESS": {
+    "scenario": "NO_PROGRESS",
+    "state": "FAULT",
+    "reason": "NO_PROGRESS",
+    "source": "SIMULATED",
+    "physical_pass": false
+  }
+}

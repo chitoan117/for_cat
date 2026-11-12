@@ -1,0 +1,12 @@
+{
+  "revision": "OWNER_UPDATE_20261030_35G_PM5",
+  "source": "USER_REQUIREMENT_UPDATE",
+  "target_grams": 35,
+  "tolerance_grams": 5,
+  "minimum_accepted_grams": 30,
+  "maximum_accepted_grams": 40,
+  "inclusive_bounds": true,
+  "control_cutoff_grams": 35,
+  "mass_in_band_is_not_terminal_success": true,
+  "APP_FLASH": "NO_GO"
+}

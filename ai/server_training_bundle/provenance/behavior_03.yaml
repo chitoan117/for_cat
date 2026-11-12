@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 5
+names: ['cat_eating', 'cat_play', 'cat_sitting', 'cat_sleep', 'cat_walk-run']
+
+roboflow:
+  workspace: cat-behavior-detection
+  project: cat-behavior-detection-zr0t0
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/cat-behavior-detection/cat-behavior-detection-zr0t0/dataset/1

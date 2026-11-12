@@ -18,9 +18,24 @@
 #error "S3 board profile selected for a non-S3 toolchain"
 #endif
 
+#if defined(FORR_REAL_S3_NO_PSRAM)
+#if !defined(FORR_BOARD_S3) || !defined(FORR_HW_SAFE) || defined(SIMULATED_SENSORS)
+#error "Measured S3 profile must be S3 HW_SAFE, never simulation"
+#endif
+// CONFIG_SPIRAM_* in the shared precompiled SDK describes capability, not board enable.
+#if defined(BOARD_HAS_PSRAM) || (defined(FORR_ENABLE_PSRAM) && FORR_ENABLE_PSRAM)
+#error "Current measured board profile must not enable unverified PSRAM"
+#endif
+#if !defined(FORR_NATIVE_USB) || FORR_NATIVE_USB != 0 || !defined(ARDUINO_USB_CDC_ON_BOOT) || ARDUINO_USB_CDC_ON_BOOT != 0
+#error "Measured bridge profile requires UART0, not native USB CDC"
+#endif
+#endif
+
 namespace board_profile {
-enum class Board { CLASSIC_ESP32DEV, GENERIC_ESP32_S3_N16R8 };
-#if defined(FORR_BOARD_S3)
+enum class Board { CLASSIC_ESP32DEV, GENERIC_ESP32_S3_N16R8, ESP32_S3_FLASH16MB_NO_VERIFIED_PSRAM };
+#if defined(FORR_REAL_S3_NO_PSRAM)
+constexpr Board selected = Board::ESP32_S3_FLASH16MB_NO_VERIFIED_PSRAM;
+#elif defined(FORR_BOARD_S3)
 constexpr Board selected = Board::GENERIC_ESP32_S3_N16R8;
 #else
 constexpr Board selected = Board::CLASSIC_ESP32DEV;

@@ -1,0 +1,34 @@
+{
+  "schema_version": 2,
+  "status": "NOT_CONFIGURED_TEMPLATE_ONLY",
+  "coordinate_system": "normalized_original_camera_frame",
+  "food_bowl_color": "RED",
+  "water_bowl_color": "BLUE",
+  "approach_reference": "BLUE_FLOOR_LINE",
+  "food_roi": null,
+  "water_roi": null,
+  "approach_line": null,
+  "tracker": {
+    "min_confidence": 0.5,
+    "min_iou": 0.15,
+    "max_centroid_distance": 0.15,
+    "ttl_ms": 1500,
+    "history_capacity": 32
+  },
+  "geometry": {
+    "near_distance": 0.03,
+    "exit_distance": 0.06,
+    "min_body_overlap": 0.2,
+    "min_motion_per_second": 0.02,
+    "motion_window_ms": 1000
+  },
+  "temporal": {
+    "confirm_ms": 1000,
+    "dropout_ms": 800,
+    "min_state_ms": 1000,
+    "max_observation_gap_ms": 500,
+    "max_behavior_age_ms": 250,
+    "min_behavior_confidence": 0.7
+  },
+  "notes": "UNCONFIGURED: fill measured normalized ROIs and set status CONFIGURED after review. Threshold defaults are uncalibrated. Optional approach_line uses x1/y1/x2/y2 endpoints only, not a homography. The standalone shadow foundation reads this schema; the production CAT/DOG executable does not. bbox_bottom_center and body overlap are not head position. No centimetres or actuator control."
+}

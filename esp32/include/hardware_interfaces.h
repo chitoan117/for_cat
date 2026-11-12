@@ -27,11 +27,12 @@ class WaterLevelSensor {
   virtual bool waterAvailable() = 0;
 };
 
-class Ds3231Clock {
+class RtcClock {
  public:
-  virtual ~Ds3231Clock() = default;
+  virtual ~RtcClock() = default;
   virtual bool validTime() = 0;
 };
+using Ds3231Clock = RtcClock; // historical source compatibility, not current hardware selection
 
 class Ssd1306Display {
  public:

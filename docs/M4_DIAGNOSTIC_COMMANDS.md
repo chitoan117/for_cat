@@ -1,5 +1,9 @@
 # M4 component diagnostics
 
+> CURRENT BOARD UPDATE: requested `diag_*` environments now use measured16MB/no-used-PSRAM bridge base and explicit candidate sensor-only mapping (`M4_SENSOR_PIN_PROFILE.md`). Old unassigned PSRAM-based configs remain named `diag_*_surrogate` for regression. Normal production pins/output gates stay-1/0; echo acquisition/buzzer driver require explicit review acknowledgment. Current physical workflow/commands are `REAL_HARDWARE_NEXT_STEPS.md` / `WINDOWS_BUILD_JETSON_FLASH.md`. Older default/unassigned/N16R8 discussion below is historical for surrogate builds, not this measured board's selection.
+
+> CURRENT RTC UPDATE: RTC hardware changed from planned DS3231 to available DS1302 during M4 physical bring-up. `diag_rtc`isDS1302CLK16/DAT17/CE18,busnotused; `diag_i2c`isOLED/futureI2Conly,no0x68RTCexpectation. `set-utc`nowDS1302explicitWP/CH/time+readback/year2000–2099; `DS1302_BRINGUP.md` hascorrectwiring/output. OldI2CRTCdiscussionbelowishistorical.
+
 Implemented in `esp32/src/diagnostics.cpp` and `esp32/include/m4/`. PC compilation and fake-I/O tests are complete; **NOT HARDWARE VERIFIED**. Milestone remains M2. These images use human **ASCII at 115200 baud**, not binary UART v1; use a serial terminal, not the Jetson v1 transport/test tool.
 
 ## Select a component explicitly
@@ -27,7 +31,8 @@ After identifying the actual board/module and reviewing its wiring, create a loc
 | --- | --- |
 | All configured pins | `M4_PINS_REVIEWED=1` only after physical review |
 | HX711 | `M4_HX711_DOUT`, `M4_HX711_SCK` |
-| RTC/scanner/OLED | `M4_I2C_SDA`, `M4_I2C_SCL` |
+| Scanner/OLEDonly | `M4_I2C_SDA`, `M4_I2C_SCL` (candidate8/9) |
+| CurrentRTC DS1302 | `M4_RTC_CLK`, `M4_RTC_DAT`, `M4_RTC_CE` (candidate16/17/18, DATbidirectional) |
 | Food ultrasonic | `M4_FOOD_TRIG`, `M4_FOOD_ECHO`, `M4_ULTRASONIC_MIN_CM`, `M4_ULTRASONIC_MAX_CM` |
 | Water ultrasonic | `M4_WATER_TRIG`, `M4_WATER_ECHO`, same explicit module limits |
 | OLED | `M4_OLED_ADDRESS` (identified 0x3c/0x3d), `M4_OLED_HEIGHT` (32/64) |

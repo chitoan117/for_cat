@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "updated_at": 1794369671.3264532,
+  "roles": {
+    "food": {
+      "empty_cm": 14.06,
+      "full_cm": null,
+      "empty_tolerance_cm": 0.3,
+      "source": "OWNER_CONFIRMED_EMPTY_20261111"
+    },
+    "water": {
+      "empty_cm": 20.25,
+      "full_cm": null,
+      "empty_tolerance_cm": 0.37,
+      "source": "OWNER_CONFIRMED_EMPTY_20261111"
+    }
+  }
+}

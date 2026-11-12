@@ -1,0 +1,288 @@
+{
+  "title": "Bữa ăn của MÈO",
+  "url": "http://127.0.0.1:59330/app?fixture=dog",
+  "width": 390,
+  "height": 1000,
+  "nodes": [
+    {
+      "label": "MOCK · Dữ liệu kiểm thử, không ghi vào Jetson\nBữa ăn của MÈO MOCK · Đang kết nối\nPhát hiện chó DOG\nThức ăn dự trữ 75% Hoạt động bình thường HEALTHY\nNước dự trữ 82% Hoạt động bình thường HEALTHY\nBữa ăn Mục tiêu mỗi lần: 35 g Kết quả cấp: Chưa xác minh Lần tiếp theo: 26/10 · 12:00 · 35 g Lần cấp thật gần nhất: Chưa có dữ liệu trong contract hiện tại. Yêu cầu gần nhất: 26/10 · 07:20 · DRY RUN\nHệ thống Jetson Đang kết nối ESP32 Đang kết nối AI Đang kết nối Worker Đang kết nối\nYêu cầu cho ăn 35 g — DRY RUN\nXem tất cả\n26/10 · 07:35 ESP32 đã kết nối Đang kết nối\n26/10 · 07:30 Đã phát hiện mèo Đang kết nối\nTổng quan\nCho ăn\nLịch sử\nHệ thống\nCài đặt",
+      "role": null,
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 1000
+    },
+    {
+      "label": "MOCK · Dữ liệu kiểm thử, không ghi vào Jetson\nBữa ăn của MÈO MOCK · Đang kết nối\nPhát hiện chó DOG\nThức ăn dự trữ 75% Hoạt động bình thường HEALTHY\nNước dự trữ 82% Hoạt động bình thường HEALTHY\nBữa ăn Mục tiêu mỗi lần: 35 g Kết quả cấp: Chưa xác minh Lần tiếp theo: 26/10 · 12:00 · 35 g Lần cấp thật gần nhất: Chưa có dữ liệu trong contract hiện tại. Yêu cầu gần nhất: 26/10 · 07:20 · DRY RUN\nHệ thống Jetson Đang kết nối ESP32 Đang kết nối AI Đang kết nối Worker Đang kết nối\nYêu cầu cho ăn 35 g — DRY RUN\nXem tất cả\n26/10 · 07:35 ESP32 đã kết nối Đang kết nối\n26/10 · 07:30 Đã phát hiện mèo Đang kết nối\nTổng quan\nCho ăn\nLịch sử\nHệ thống\nCài đặt",
+      "role": null,
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 1000
+    },
+    {
+      "label": "MOCK · Dữ liệu kiểm thử, không ghi vào Jetson\nBữa ăn của MÈO MOCK · Đang kết nối\nPhát hiện chó DOG\nThức ăn dự trữ 75% Hoạt động bình thường HEALTHY\nNước dự trữ 82% Hoạt động bình thường HEALTHY\nBữa ăn Mục tiêu mỗi lần: 35 g Kết quả cấp: Chưa xác minh Lần tiếp theo: 26/10 · 12:00 · 35 g Lần cấp thật gần nhất: Chưa có dữ liệu trong contract hiện tại. Yêu cầu gần nhất: 26/10 · 07:20 · DRY RUN\nHệ thống Jetson Đang kết nối ESP32 Đang kết nối AI Đang kết nối Worker Đang kết nối\nYêu cầu cho ăn 35 g — DRY RUN\nXem tất cả\n26/10 · 07:35 ESP32 đã kết nối Đang kết nối\n26/10 · 07:30 Đã phát hiện mèo Đang kết nối\nTổng quan\nCho ăn\nLịch sử\nHệ thống\nCài đặt",
+      "role": null,
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 1000
+    },
+    {
+      "label": "MOCK · Dữ liệu kiểm thử, không ghi vào Jetson\nBữa ăn của MÈO MOCK · Đang kết nối\nPhát hiện chó DOG\nThức ăn dự trữ 75% Hoạt động bình thường HEALTHY\nNước dự trữ 82% Hoạt động bình thường HEALTHY\nBữa ăn Mục tiêu mỗi lần: 35 g Kết quả cấp: Chưa xác minh Lần tiếp theo: 26/10 · 12:00 · 35 g Lần cấp thật gần nhất: Chưa có dữ liệu trong contract hiện tại. Yêu cầu gần nhất: 26/10 · 07:20 · DRY RUN\nHệ thống Jetson Đang kết nối ESP32 Đang kết nối AI Đang kết nối Worker Đang kết nối\nYêu cầu cho ăn 35 g — DRY RUN\nXem tất cả\n26/10 · 07:35 ESP32 đã kết nối Đang kết nối\n26/10 · 07:30 Đã phát hiện mèo Đang kết nối\nTổng quan\nCho ăn\nLịch sử\nHệ thống\nCài đặt",
+      "role": null,
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 1000
+    },
+    {
+      "label": "MOCK · Dữ liệu kiểm thử, không ghi vào Jetson",
+      "role": null,
+      "x": 16,
+      "y": 8,
+      "w": 358,
+      "h": 20
+    },
+    {
+      "label": "Bữa ăn của MÈO MOCK · Đang kết nối\nPhát hiện chó DOG\nThức ăn dự trữ 75% Hoạt động bình thường HEALTHY\nNước dự trữ 82% Hoạt động bình thường HEALTHY\nBữa ăn Mục tiêu mỗi lần: 35 g Kết quả cấp: Chưa xác minh Lần tiếp theo: 26/10 · 12:00 · 35 g Lần cấp thật gần nhất: Chưa có dữ liệu trong contract hiện tại. Yêu cầu gần nhất: 26/10 · 07:20 · DRY RUN\nHệ thống Jetson Đang kết nối ESP32 Đang kết nối AI Đang kết nối Worker Đang kết nối\nYêu cầu cho ăn 35 g — DRY RUN\nXem tất cả\n26/10 · 07:35 ESP32 đã kết nối Đang kết nối\n26/10 · 07:30 Đã phát hiện mèo Đang kết nối",
+      "role": null,
+      "x": 0,
+      "y": 36,
+      "w": 390,
+      "h": 896
+    },
+    {
+      "label": "Bữa ăn của MÈO MOCK · Đang kết nối\nPhát hiện chó DOG\nThức ăn dự trữ 75% Hoạt động bình thường HEALTHY\nNước dự trữ 82% Hoạt động bình thường HEALTHY\nBữa ăn Mục tiêu mỗi lần: 35 g Kết quả cấp: Chưa xác minh Lần tiếp theo: 26/10 · 12:00 · 35 g Lần cấp thật gần nhất: Chưa có dữ liệu trong contract hiện tại. Yêu cầu gần nhất: 26/10 · 07:20 · DRY RUN\nHệ thống Jetson Đang kết nối ESP32 Đang kết nối AI Đang kết nối Worker Đang kết nối\nYêu cầu cho ăn 35 g — DRY RUN\nXem tất cả\n26/10 · 07:35 ESP32 đã kết nối Đang kết nối\n26/10 · 07:30 Đã phát hiện mèo Đang kết nối",
+      "role": "group",
+      "x": 0,
+      "y": 36,
+      "w": 390,
+      "h": 896
+    },
+    {
+      "label": "Bữa ăn của MÈO MOCK · Đang kết nối",
+      "role": null,
+      "x": 18,
+      "y": 52,
+      "w": 354,
+      "h": 48
+    },
+    {
+      "label": "",
+      "role": null,
+      "x": 18,
+      "y": 100,
+      "w": 354,
+      "h": 18
+    },
+    {
+      "label": "Phát hiện chó DOG",
+      "role": null,
+      "x": 18,
+      "y": 118,
+      "w": 354,
+      "h": 168
+    },
+    {
+      "label": "",
+      "role": null,
+      "x": 18,
+      "y": 286,
+      "w": 354,
+      "h": 12
+    },
+    {
+      "label": "Thức ăn dự trữ 75% Hoạt động bình thường HEALTHY\nNước dự trữ 82% Hoạt động bình thường HEALTHY",
+      "role": null,
+      "x": 18,
+      "y": 298,
+      "w": 354,
+      "h": 192
+    },
+    {
+      "label": "Thức ăn dự trữ 75% Hoạt động bình thường HEALTHY",
+      "role": null,
+      "x": 18,
+      "y": 298,
+      "w": 171,
+      "h": 192
+    },
+    {
+      "label": "Nước dự trữ 82% Hoạt động bình thường HEALTHY",
+      "role": null,
+      "x": 201,
+      "y": 298,
+      "w": 171,
+      "h": 192
+    },
+    {
+      "label": "",
+      "role": null,
+      "x": 18,
+      "y": 490,
+      "w": 354,
+      "h": 12
+    },
+    {
+      "label": "Bữa ăn Mục tiêu mỗi lần: 35 g Kết quả cấp: Chưa xác minh Lần tiếp theo: 26/10 · 12:00 · 35 g Lần cấp thật gần nhất: Chưa có dữ liệu trong contract hiện tại. Yêu cầu gần nhất: 26/10 · 07:20 · DRY RUN",
+      "role": null,
+      "x": 18,
+      "y": 502,
+      "w": 354,
+      "h": 208
+    },
+    {
+      "label": "Bữa ăn Mục tiêu mỗi lần: 35 g Kết quả cấp: Chưa xác minh Lần tiếp theo: 26/10 · 12:00 · 35 g Lần cấp thật gần nhất: Chưa có dữ liệu trong contract hiện tại. Yêu cầu gần nhất: 26/10 · 07:20 · DRY RUN",
+      "role": null,
+      "x": 18,
+      "y": 502,
+      "w": 354,
+      "h": 208
+    },
+    {
+      "label": "",
+      "role": null,
+      "x": 18,
+      "y": 710,
+      "w": 354,
+      "h": 12
+    },
+    {
+      "label": "Hệ thống Jetson Đang kết nối ESP32 Đang kết nối AI Đang kết nối Worker Đang kết nối",
+      "role": null,
+      "x": 18,
+      "y": 722,
+      "w": 354,
+      "h": 158
+    },
+    {
+      "label": "Hệ thống Jetson Đang kết nối ESP32 Đang kết nối AI Đang kết nối Worker Đang kết nối",
+      "role": null,
+      "x": 18,
+      "y": 722,
+      "w": 354,
+      "h": 158
+    },
+    {
+      "label": "",
+      "role": null,
+      "x": 18,
+      "y": 880,
+      "w": 354,
+      "h": 14
+    },
+    {
+      "label": "Yêu cầu cho ăn 35 g — DRY RUN",
+      "role": null,
+      "x": 18,
+      "y": 894,
+      "w": 354,
+      "h": 38
+    },
+    {
+      "label": "Yêu cầu cho ăn 35 g — DRY RUN",
+      "role": "button",
+      "x": 18,
+      "y": 894,
+      "w": 354,
+      "h": 38
+    },
+    {
+      "label": "",
+      "role": null,
+      "x": 18,
+      "y": 940,
+      "w": 354,
+      "h": 18
+    },
+    {
+      "label": "Hoạt động gần đây",
+      "role": "group",
+      "x": 18,
+      "y": 958,
+      "w": 354,
+      "h": 32
+    },
+    {
+      "label": "Xem tất cả",
+      "role": "button",
+      "x": 280.076171875,
+      "y": 958,
+      "w": 91.921875,
+      "h": 32
+    },
+    {
+      "label": "26/10 · 07:35 ESP32 đã kết nối Đang kết nối",
+      "role": null,
+      "x": 18,
+      "y": 990,
+      "w": 354,
+      "h": 101
+    },
+    {
+      "label": "26/10 · 07:35 ESP32 đã kết nối Đang kết nối",
+      "role": null,
+      "x": 18,
+      "y": 998,
+      "w": 354,
+      "h": 93
+    },
+    {
+      "label": "26/10 · 07:30 Đã phát hiện mèo Đang kết nối",
+      "role": null,
+      "x": 18,
+      "y": 1091,
+      "w": 354,
+      "h": 91
+    },
+    {
+      "label": "26/10 · 07:30 Đã phát hiện mèo Đang kết nối",
+      "role": null,
+      "x": 18,
+      "y": 1099,
+      "w": 354,
+      "h": 83
+    },
+    {
+      "label": "Tổng quan",
+      "role": "button",
+      "x": 0,
+      "y": 932,
+      "w": 78,
+      "h": 68
+    },
+    {
+      "label": "Cho ăn",
+      "role": "button",
+      "x": 78,
+      "y": 932,
+      "w": 78,
+      "h": 68
+    },
+    {
+      "label": "Lịch sử",
+      "role": "button",
+      "x": 156,
+      "y": 932,
+      "w": 78,
+      "h": 68
+    },
+    {
+      "label": "Hệ thống",
+      "role": "button",
+      "x": 234,
+      "y": 932,
+      "w": 78,
+      "h": 68
+    },
+    {
+      "label": "Cài đặt",
+      "role": "button",
+      "x": 312,
+      "y": 932,
+      "w": 78,
+      "h": 68
+    }
+  ]
+}

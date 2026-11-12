@@ -16,7 +16,7 @@ $Parent = 'EXISTING_DESTINATION_PARENT'
 if (-not (Test-Path -LiteralPath $Parent)) { throw 'Choose an existing destination parent' }
 $Destination = Join-Path $Parent 'forr_cat_handoff'
 if (Test-Path -LiteralPath $Destination) { throw 'Destination exists; choose a new handoff directory' }
-$ExcludedDirs = @('.venv', '.tools-venv', '.tools-zig', '.pio', '.checks', '.native-build', '__pycache__', '.pytest_cache', '.git', 'evidence', (Join-Path $Source 'jetson\data'), (Join-Path $Source 'ai\models'), (Join-Path $Source 'ai\datasets\raw'), (Join-Path $Source 'ai\datasets\processed'), (Join-Path $Source 'ai\datasets\capture'), (Join-Path $Source 'ai\datasets\releases'), (Join-Path $Source 'ai\datasets\exports'), (Join-Path $Source 'ai\experiments\runs'), (Join-Path $Source 'ai\registry\local'))
+$ExcludedDirs = @('.venv', '.tools-venv', '.tools-zig', '.pio', '.checks', '.release', '.deploy', '.native-build', '__pycache__', '.pytest_cache', '.git', 'evidence', (Join-Path $Source 'jetson\data'), (Join-Path $Source 'ai\models'), (Join-Path $Source 'ai\datasets\raw'), (Join-Path $Source 'ai\datasets\processed'), (Join-Path $Source 'ai\datasets\capture'), (Join-Path $Source 'ai\datasets\releases'), (Join-Path $Source 'ai\datasets\exports'), (Join-Path $Source 'ai\experiments\runs'), (Join-Path $Source 'ai\registry\local'))
 $ExcludedFiles = @('.env', '.env.local', '.env.production', '*.pem', '*.key', '*.db', '*.db-*', '*.sqlite', '*.sqlite3', '*.pyc', '*.log', '*.zip', '*.onnx', '*.engine', '*.pt', '*.pth', 'manifest.jsonl', 'sources.jsonl', 'splits.json')
 robocopy $Source $Destination /E /L /XD $ExcludedDirs /XF $ExcludedFiles
 if ($LASTEXITCODE -ge 8) { throw 'Robocopy preview failed' }

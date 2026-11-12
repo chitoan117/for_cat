@@ -1,5 +1,7 @@
 # M4 driver audit — starting state, then implementation
 
+> HISTORICAL plannedDS3231audit/implementationcheckpoint. CurrentcanonicalRTCchangedtoDS1302duringM4bring-up; `DS1302_BRINGUP.md` / `DS1302_MIGRATION_RESULT.md`. DS3231code/testsremainlegacycompatibility,notcurrentdiagnosticselection.
+
 Starting source inspected: `esp32/src/main.cpp`, `include/{sensor_drivers,hardware_interfaces,safety_logic,safety_persistence,pins,board_config}.h`, PlatformIO profiles and native harness. M3 pack is already complete and is **not recreated** in this task.
 
 | Component | Initial classification | Initial evidence / missing work |

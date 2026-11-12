@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 14
+names: ['-', '- Auto-orientation of pixel data -with EXIF-orientation stripping-', 'Cat Behavier - v1 2022-01-19 12-24am', 'Catlabeling are annotated in YOLO v5 PyTorch format.', 'It includes 225 images.', 'The following pre-processing was applied to each image-', 'This dataset was exported via roboflow.ai on January 18- 2022 at 9-29 PM GMT', 'cat_drinking', 'cat_eating', 'cat_fighting', 'cat_laying', 'cat_playing', 'cat_sitting', 'cat_stratching']
+
+roboflow:
+  workspace: cat-related
+  project: cat-behavior-kmbj0
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/cat-related/cat-behavior-kmbj0/dataset/1

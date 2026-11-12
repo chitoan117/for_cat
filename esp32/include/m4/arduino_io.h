@@ -13,7 +13,7 @@ class ArduinoPins final : public PinIO {
     if (pin < 0 || pin > 48 || !GPIO_IS_VALID_GPIO(pin)) return false;
 #if defined(CONFIG_IDF_TARGET_ESP32S3)
     // Conservative exclusions; physical header/module review is STILL required.
-    if ((pin >= 26 && pin <= 37) || pin==0 || pin==3 || pin==19 || pin==20 ||
+    if ((pin >= 26 && pin <= 38) || pin==0 || pin==3 || pin==19 || pin==20 ||
         (pin >= 39 && pin <= 46)) return false; // SPI/OPI, straps, USB/JTAG/UART0
 #else
     if ((pin >= 6 && pin <= 11) || pin==0 || pin==2 || pin==5 || pin==12 || pin==15 || pin==1 || pin==3) return false;

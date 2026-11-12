@@ -1,0 +1,355 @@
+import 'package:flutter/material.dart';
+
+import 'feeder_backend.dart';
+import 'meal_plans.dart';
+import 'feeder_state.dart';
+
+const _dayLabels = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+
+class MealPlanPanel extends StatelessWidget {
+  final FeederBackend backend;
+  const MealPlanPanel({super.key, required this.backend});
+
+  Future<void> _edit(BuildContext context, [MealPlan? plan]) async {
+    final draft = await showDialog<_PlanDraft>(
+      context: context,
+      builder: (_) => _PlanEditor(plan: plan),
+    );
+    if (draft != null && context.mounted) {
+      await backend.saveMealPlan(
+        existing: plan,
+        name: draft.name,
+        localTime: draft.time,
+        weekdays: draft.days,
+        enabled: draft.enabled,
+      );
+    }
+  }
+
+  Future<void> _delete(BuildContext context, MealPlan plan) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Xóa lịch?'),
+        content: Text(plan.name),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Hủy'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Xóa lịch'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) await backend.deleteMealPlan(plan);
+  }
+
+  @override
+  Widget build(BuildContext context) => Card(
+    elevation: 0,
+    color: Colors.white,
+    margin: EdgeInsets.zero,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Meal Plan · 35 g',
+            style: Theme.of(context).textTheme.titleLarge
+                ?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Giờ Việt Nam (UTC+7) · lưu trên Jetson. Worker và preview dùng chung logic DRY RUN.',
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            'SCHEDULED · DRY RUN. Cửa sổ đến hạn 60 giây; không truy lĩnh bữa đã lỡ.',
+          ),
+          if (backend.isMock)
+            const Padding(
+              padding: EdgeInsets.only(top: 12),
+              child: Text('Cấu hình lịch chỉ có trong chế độ REAL.'),
+            )
+          else ...[
+            const SizedBox(height: 10),
+            Text(
+              'Scheduled Worker · ${backend.scheduledWorker.status}',
+              style: const TextStyle(fontWeight: FontWeight.w800),
+            ),
+            Text(
+              backend.scheduledWorker.enabled == true
+                  ? 'Tự xét lịch đang bật · không điều khiển cơ cấu.'
+                  : backend.scheduledWorker.enabled == false
+                  ? 'Worker đang tắt · preview vẫn dùng được.'
+                  : 'Chưa có trạng thái worker từ Jetson.',
+            ),
+            if (backend.scheduledWorker.data['last_poll_at'] != null)
+              Text('Lần xét: ${backend.scheduledWorker.data['last_poll_at']}'),
+            if (backend.scheduledWorker.data['submitted_count'] != null)
+              Text(
+                'Đã tạo trong phiên: ${backend.scheduledWorker.data['submitted_count']} · lỗi: ${backend.scheduledWorker.data['error_count']}',
+              ),
+            if (backend.scheduledWorker.data['last_error'] != null)
+              Text(
+                '${backend.scheduledWorker.data['last_error']}',
+                style: const TextStyle(color: Color(0xffa34b4b)),
+              ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              children: [
+                FilledButton.icon(
+                  onPressed: backend.plansBusy ? null : () => _edit(context),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Thêm lịch'),
+                ),
+                TextButton.icon(
+                  onPressed: backend.plansBusy
+                      ? null
+                      : backend.refreshMealPlans,
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Tải lại lịch'),
+                ),
+              ],
+            ),
+            if (backend.plansBusy)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: LinearProgressIndicator(),
+              ),
+            if (backend.plansError != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(
+                  backend.plansError!,
+                  style: const TextStyle(color: Color(0xffa34b4b)),
+                ),
+              ),
+            if (backend.mealPlans.isEmpty &&
+                !backend.plansBusy &&
+                backend.plansError == null)
+              const Padding(
+                padding: EdgeInsets.only(top: 12),
+                child: Text('Chưa có lịch. Lịch mới mặc định tắt.'),
+              ),
+            for (final plan in backend.mealPlans) ...[
+              const Divider(height: 24),
+              Text(
+                '${plan.name} · ${plan.localTime}',
+                style: const TextStyle(fontWeight: FontWeight.w800),
+              ),
+              Text(
+                '${plan.weekdays.map((d) => _dayLabels[d]).join(', ')} · ${plan.enabled ? 'Đang bật · DRY RUN' : 'Đang tắt'} · bản ${plan.revision}',
+              ),
+              Wrap(
+                spacing: 8,
+                children: [
+                  TextButton(
+                    onPressed: backend.plansBusy
+                        ? null
+                        : () => _edit(context, plan),
+                    child: const Text('Sửa'),
+                  ),
+                  TextButton(
+                    onPressed: backend.plansBusy
+                        ? null
+                        : () => _delete(context, plan),
+                    child: const Text('Xóa'),
+                  ),
+                  OutlinedButton(
+                    onPressed: backend.plansBusy
+                        ? null
+                        : () => backend.previewMealPlan(plan),
+                    child: const Text('Xét lịch — DRY RUN'),
+                  ),
+                ],
+              ),
+            ],
+            if (backend.scheduledOccurrences.isNotEmpty) ...[
+              const Divider(height: 24),
+              const Text(
+                'Occurrence đã lưu · DRY RUN',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
+              for (final item in backend.scheduledOccurrences.take(5))
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${item['local_date']} · ${item['origin'] == 'WORKER' ? 'Tự động' : 'Preview'} · 35 g',
+                      ),
+                      SelectableText('${item['request_id']}'),
+                      Text(
+                        item['decision_health'] == 'INVALID_STORED_DECISION'
+                            ? 'UNKNOWN · lỗi quyết định đã lưu'
+                            : item['decision'] == null
+                            ? 'Chờ C++ arbiter'
+                            : text(
+                                object(
+                                  item['decision'],
+                                )['qualification_reason'],
+                              ),
+                      ),
+                    ],
+                  ),
+                ),
+              const Text(
+                'actuator_execution=false · actual_dispensed_grams=null',
+              ),
+            ],
+            if (backend.schedulePreview != null) ...[
+              const Divider(height: 24),
+              Text(
+                'Kết quả xét lịch: ${backend.schedulePreview!.reason}',
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+              if (backend.schedulePreview!.data['due_at'] != null)
+                Text('Đến hạn: ${backend.schedulePreview!.data['due_at']}'),
+              if (backend.scheduledReceipt != null) ...[
+                SelectableText('ID: ${backend.scheduledReceipt!.id}'),
+                Text('SCHEDULED · 35 g · ${backend.scheduledReceipt!.reason}'),
+              ],
+              const Text(
+                'actuator_execution=false · actual_dispensed_grams=null',
+              ),
+            ],
+          ],
+        ],
+      ),
+    ),
+  );
+}
+
+class _PlanDraft {
+  final String name, time;
+  final List<int> days;
+  final bool enabled;
+  const _PlanDraft(this.name, this.time, this.days, this.enabled);
+}
+
+class _PlanEditor extends StatefulWidget {
+  final MealPlan? plan;
+  const _PlanEditor({this.plan});
+  @override
+  State<_PlanEditor> createState() => _PlanEditorState();
+}
+
+class _PlanEditorState extends State<_PlanEditor> {
+  final form = GlobalKey<FormState>();
+  late final TextEditingController name, time;
+  late final Set<int> days;
+  late bool enabled;
+  @override
+  void initState() {
+    super.initState();
+    name = TextEditingController(text: widget.plan?.name ?? '');
+    time = TextEditingController(text: widget.plan?.localTime ?? '07:00');
+    days = (widget.plan?.weekdays ?? [0, 1, 2, 3, 4, 5, 6]).toSet();
+    enabled = widget.plan?.enabled ?? false;
+  }
+
+  @override
+  void dispose() {
+    name.dispose();
+    time.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    scrollable: true,
+    title: Text(widget.plan == null ? 'Thêm lịch 35 g' : 'Sửa lịch 35 g'),
+    content: SizedBox(
+      width: 400,
+      child: Form(
+        key: form,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextFormField(
+              controller: name,
+              maxLength: 64,
+              decoration: const InputDecoration(labelText: 'Tên lịch'),
+              validator: (v) =>
+                  v == null || v.trim().isEmpty ? 'Nhập tên lịch' : null,
+            ),
+            TextFormField(
+              controller: time,
+              keyboardType: TextInputType.datetime,
+              decoration: const InputDecoration(labelText: 'Giờ HH:mm (UTC+7)'),
+              validator: (v) =>
+                  v != null &&
+                      RegExp(r'^(?:[01][0-9]|2[0-3]):[0-5][0-9]$').hasMatch(v)
+                  ? null
+                  : 'Nhập giờ từ 00:00 đến 23:59',
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 4,
+              children: [
+                for (var day = 0; day < 7; day++)
+                  FilterChip(
+                    label: Text(_dayLabels[day]),
+                    selected: days.contains(day),
+                    onSelected: (selected) => setState(() {
+                      if (selected) {
+                        days.add(day);
+                      } else {
+                        days.remove(day);
+                      }
+                    }),
+                  ),
+              ],
+            ),
+            if (days.isEmpty)
+              const Text(
+                'Chọn ít nhất một ngày',
+                style: TextStyle(color: Colors.red),
+              ),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Cho phép xét lịch DRY RUN'),
+              subtitle: const Text(
+                'Không bật AUTO FEED hay cơ cấu cấp thức ăn.',
+              ),
+              value: enabled,
+              onChanged: (value) => setState(() => enabled = value),
+            ),
+            const Text('Target cố định 35 g · nguồn thời gian Jetson'),
+          ],
+        ),
+      ),
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Text('Hủy'),
+      ),
+      FilledButton(
+        onPressed: () {
+          if (form.currentState!.validate() && days.isNotEmpty) {
+            Navigator.pop(
+              context,
+              _PlanDraft(
+                name.text.trim(),
+                time.text,
+                days.toList()..sort(),
+                enabled,
+              ),
+            );
+          }
+        },
+        child: const Text('Lưu lịch'),
+      ),
+    ],
+  );
+}

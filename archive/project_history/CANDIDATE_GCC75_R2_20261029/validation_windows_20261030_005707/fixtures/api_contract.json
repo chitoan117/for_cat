@@ -1,0 +1,1337 @@
+{
+  "source": "SIMULATED",
+  "execution_context": "OFFLINE_TEST_ONLY",
+  "physical_pass": false,
+  "cases": {
+    "healthy": {
+      "schema_version": "hardware_diagnostics_v1",
+      "source": "SIMULATED",
+      "simulated": true,
+      "execution_context": "OFFLINE_TEST_ONLY",
+      "telemetry_time": {
+        "clock_domain": "HOST_MONOTONIC_MS",
+        "last_rx_ms": 100000,
+        "age_ms": 0.0,
+        "device_uptime_ms": 70000,
+        "is_UTC_timestamp": false
+      },
+      "connection": {
+        "connected": true,
+        "serial_connected": true,
+        "health": "ESP32_CONNECTED",
+        "device": null,
+        "last_telemetry_at": null,
+        "stale": false,
+        "counters": {},
+        "mode": "diag_current_hardware",
+        "monotonic_ms": 70000
+      },
+      "camera": {
+        "status": "CAMERA_OFFLINE",
+        "source": "REAL",
+        "simulated": false,
+        "viewers": 0,
+        "max_viewers": 4,
+        "frame_slots": 1,
+        "buffered_bytes": 0,
+        "frame_id": null,
+        "width": null,
+        "producer_epoch": null,
+        "height": null,
+        "frame_age_seconds": null,
+        "annotations": "BURNED_IN_SAME_FRAME_NOT_STATUS_OVERLAY",
+        "stream_lease_seconds": 300.0,
+        "classification": "UNKNOWN",
+        "confidence": null,
+        "published": 0,
+        "replaced_frames": 0,
+        "rejected_frames": 0,
+        "actuator_execution": false
+      },
+      "ai": {
+        "classification": "UNKNOWN",
+        "health": "DISCONNECTED",
+        "last_observation_at": null
+      },
+      "FOOD_ROI": {
+        "mode": "FULL_FRAME",
+        "region": null,
+        "reviewed": false,
+        "producer_membership_proof": false
+      },
+      "ultrasonic": {
+        "HC_SR04_1": {
+          "trigger_gpio": 12,
+          "echo_gpio": 13,
+          "distance_cm": 15,
+          "valid": true,
+          "role": "DISTANCE",
+          "state": "OK",
+          "sample_age_ms": 0,
+          "reason": null,
+          "observation_is_physical_pass": false,
+          "water_level": null
+        },
+        "HC_SR04_2": {
+          "trigger_gpio": 16,
+          "echo_gpio": 17,
+          "distance_cm": 45,
+          "valid": true,
+          "role": "DISTANCE",
+          "state": "OK",
+          "sample_age_ms": 0,
+          "reason": null,
+          "observation_is_physical_pass": false,
+          "water_level": null
+        },
+        "JSN_SR04T_1": {
+          "trigger_gpio": 14,
+          "echo_gpio": 15,
+          "distance_cm": 50,
+          "valid": true,
+          "role": "WATER_LEVEL",
+          "state": "OK",
+          "sample_age_ms": 0,
+          "reason": null,
+          "observation_is_physical_pass": false,
+          "water_level": {
+            "percent": 75.0,
+            "state": "CONFIGURED_GEOMETRY_ONLY",
+            "mount_id": "SIMULATED_TANK",
+            "physical_acceptance": false
+          }
+        },
+        "JSN_SR04T_2": {
+          "trigger_gpio": 18,
+          "echo_gpio": 10,
+          "distance_cm": 75,
+          "valid": true,
+          "role": "TBD",
+          "state": "OK",
+          "sample_age_ms": 0,
+          "reason": null,
+          "observation_is_physical_pass": false,
+          "water_level": {
+            "percent": null,
+            "state": "ROLE_TBD_LEVEL_DISABLED"
+          }
+        }
+      },
+      "pir": {
+        "motion": true,
+        "valid": true,
+        "quality": "VALID"
+      },
+      "hx711": {
+        "grams": 34.981,
+        "raw_counts": -700123.0,
+        "authority": "FIRMWARE_OBSERVATION_CONTEXT_PERSISTENCE_NOT_VERIFIED",
+        "static_measurement_physical_pass": "YES_OWNER_ACCEPTED",
+        "calibration_persistence": "NOT_VERIFIED",
+        "closed_loop_35g": "NOT_VERIFIED"
+      },
+      "oled": {
+        "health": "HEALTHY",
+        "initialized": true,
+        "prior_display_owner_evidence": "RETAINED_NO_RETEST_REQUIRED"
+      },
+      "button": {
+        "gpio": 21,
+        "pressed": true,
+        "request_count": 1,
+        "actuator_blocked": true
+      },
+      "buzzer": {
+        "available": false,
+        "gpio": 2,
+        "polarity": "ACTIVE_LOW",
+        "vcc": 3.3,
+        "sequence": "2x200ms_gap200ms",
+        "max_sequence_ms": 600,
+        "cooldown_s": 60,
+        "max_tests_per_boot": 3,
+        "reason": "FRESH_REAL_LINK_AND_QUALIFIED_MANUAL_BUZZER_FIRMWARE_REQUIRED"
+      },
+      "servo": "LOCKED",
+      "pump": "LOCKED",
+      "actuator_execution": false,
+      "hardware_safety_telemetry": {
+        "servo_armed": false,
+        "servo_state": "PWM_NOT_ATTACHED_CLOSE_PHYSICAL_UNVERIFIED",
+        "pump_armed": false,
+        "pump_state": "OUTPUT_NOT_ENABLED_PHYSICAL_OFF_UNVERIFIED",
+        "auto_feed": false,
+        "auto_water": false,
+        "actuator_outputs_enabled": 0,
+        "actuator_execution": false
+      },
+      "lock_labels_are_policy_not_physical_off_proof": true,
+      "diagnostic_snapshot_is_physical_pass": false,
+      "permissions": {
+        "VIEW_CAMERA": true,
+        "CONTROL_SYSTEM": false
+      }
+    },
+    "stale": {
+      "schema_version": "hardware_diagnostics_v1",
+      "source": "SIMULATED",
+      "simulated": true,
+      "execution_context": "OFFLINE_TEST_ONLY",
+      "telemetry_time": {
+        "clock_domain": "HOST_MONOTONIC_MS",
+        "last_rx_ms": 100000,
+        "age_ms": 2100.0,
+        "device_uptime_ms": 70000,
+        "is_UTC_timestamp": false
+      },
+      "connection": {
+        "connected": true,
+        "serial_connected": true,
+        "health": "ESP32_CONNECTED",
+        "device": null,
+        "last_telemetry_at": null,
+        "stale": false,
+        "counters": {},
+        "mode": "diag_current_hardware",
+        "monotonic_ms": 70000
+      },
+      "camera": {
+        "status": "CAMERA_OFFLINE",
+        "source": "REAL",
+        "simulated": false,
+        "viewers": 0,
+        "max_viewers": 4,
+        "frame_slots": 1,
+        "buffered_bytes": 0,
+        "frame_id": null,
+        "width": null,
+        "producer_epoch": null,
+        "height": null,
+        "frame_age_seconds": null,
+        "annotations": "BURNED_IN_SAME_FRAME_NOT_STATUS_OVERLAY",
+        "stream_lease_seconds": 300.0,
+        "classification": "UNKNOWN",
+        "confidence": null,
+        "published": 0,
+        "replaced_frames": 0,
+        "rejected_frames": 0,
+        "actuator_execution": false
+      },
+      "ai": {
+        "classification": "UNKNOWN",
+        "health": "DISCONNECTED",
+        "last_observation_at": null
+      },
+      "FOOD_ROI": {
+        "mode": "FULL_FRAME",
+        "region": null,
+        "reviewed": false,
+        "producer_membership_proof": false
+      },
+      "ultrasonic": {
+        "HC_SR04_1": {
+          "trigger_gpio": 12,
+          "echo_gpio": 13,
+          "distance_cm": null,
+          "valid": false,
+          "role": "DISTANCE",
+          "state": "STALE",
+          "sample_age_ms": 2100,
+          "reason": "STALE",
+          "observation_is_physical_pass": false,
+          "water_level": null
+        },
+        "HC_SR04_2": {
+          "trigger_gpio": 16,
+          "echo_gpio": 17,
+          "distance_cm": null,
+          "valid": false,
+          "role": "DISTANCE",
+          "state": "STALE",
+          "sample_age_ms": 2100,
+          "reason": "STALE",
+          "observation_is_physical_pass": false,
+          "water_level": null
+        },
+        "JSN_SR04T_1": {
+          "trigger_gpio": 14,
+          "echo_gpio": 15,
+          "distance_cm": null,
+          "valid": false,
+          "role": "WATER_LEVEL",
+          "state": "STALE",
+          "sample_age_ms": 2100,
+          "reason": "STALE",
+          "observation_is_physical_pass": false,
+          "water_level": {
+            "percent": null,
+            "state": "NO_VALID_DISTANCE"
+          }
+        },
+        "JSN_SR04T_2": {
+          "trigger_gpio": 18,
+          "echo_gpio": 10,
+          "distance_cm": null,
+          "valid": false,
+          "role": "TBD",
+          "state": "STALE",
+          "sample_age_ms": 2100,
+          "reason": "STALE",
+          "observation_is_physical_pass": false,
+          "water_level": {
+            "percent": null,
+            "state": "ROLE_TBD_LEVEL_DISABLED"
+          }
+        }
+      },
+      "pir": {
+        "motion": null,
+        "valid": false,
+        "quality": "STALE"
+      },
+      "hx711": {
+        "grams": null,
+        "raw_counts": -700123.0,
+        "authority": "NO_CURRENT_CALIBRATED_MEASUREMENT",
+        "static_measurement_physical_pass": "YES_OWNER_ACCEPTED",
+        "calibration_persistence": "NOT_VERIFIED",
+        "closed_loop_35g": "NOT_VERIFIED"
+      },
+      "oled": {
+        "health": "HEALTHY",
+        "initialized": true,
+        "prior_display_owner_evidence": "RETAINED_NO_RETEST_REQUIRED"
+      },
+      "button": {
+        "gpio": 21,
+        "pressed": true,
+        "request_count": 1,
+        "actuator_blocked": true
+      },
+      "buzzer": {
+        "available": false,
+        "gpio": 2,
+        "polarity": "ACTIVE_LOW",
+        "vcc": 3.3,
+        "sequence": "2x200ms_gap200ms",
+        "max_sequence_ms": 600,
+        "cooldown_s": 60,
+        "max_tests_per_boot": 3,
+        "reason": "FRESH_REAL_LINK_AND_QUALIFIED_MANUAL_BUZZER_FIRMWARE_REQUIRED"
+      },
+      "servo": "LOCKED",
+      "pump": "LOCKED",
+      "actuator_execution": false,
+      "hardware_safety_telemetry": {
+        "servo_armed": false,
+        "servo_state": "PWM_NOT_ATTACHED_CLOSE_PHYSICAL_UNVERIFIED",
+        "pump_armed": false,
+        "pump_state": "OUTPUT_NOT_ENABLED_PHYSICAL_OFF_UNVERIFIED",
+        "auto_feed": false,
+        "auto_water": false,
+        "actuator_outputs_enabled": 0,
+        "actuator_execution": false
+      },
+      "lock_labels_are_policy_not_physical_off_proof": true,
+      "diagnostic_snapshot_is_physical_pass": false,
+      "permissions": {
+        "VIEW_CAMERA": true,
+        "CONTROL_SYSTEM": false
+      }
+    },
+    "disconnected": {
+      "schema_version": "hardware_diagnostics_v1",
+      "source": "SIMULATED",
+      "simulated": true,
+      "execution_context": "OFFLINE_TEST_ONLY",
+      "telemetry_time": {
+        "clock_domain": "HOST_MONOTONIC_MS",
+        "last_rx_ms": 100000,
+        "age_ms": 0,
+        "device_uptime_ms": 70000,
+        "is_UTC_timestamp": false
+      },
+      "connection": {
+        "connected": false,
+        "serial_connected": false,
+        "health": "ESP32_DISCONNECTED",
+        "device": null,
+        "last_telemetry_at": null,
+        "stale": false,
+        "counters": {}
+      },
+      "camera": {
+        "status": "CAMERA_OFFLINE",
+        "source": "REAL",
+        "simulated": false,
+        "viewers": 0,
+        "max_viewers": 4,
+        "frame_slots": 1,
+        "buffered_bytes": 0,
+        "frame_id": null,
+        "width": null,
+        "producer_epoch": null,
+        "height": null,
+        "frame_age_seconds": null,
+        "annotations": "BURNED_IN_SAME_FRAME_NOT_STATUS_OVERLAY",
+        "stream_lease_seconds": 300.0,
+        "classification": "UNKNOWN",
+        "confidence": null,
+        "published": 0,
+        "replaced_frames": 0,
+        "rejected_frames": 0,
+        "actuator_execution": false
+      },
+      "ai": {
+        "classification": "UNKNOWN",
+        "health": "DISCONNECTED",
+        "last_observation_at": null
+      },
+      "FOOD_ROI": {
+        "mode": "FULL_FRAME",
+        "region": null,
+        "reviewed": false,
+        "producer_membership_proof": false
+      },
+      "ultrasonic": {
+        "HC_SR04_1": {
+          "trigger_gpio": 12,
+          "echo_gpio": 13,
+          "distance_cm": null,
+          "valid": false,
+          "role": "DISTANCE",
+          "state": "DISCONNECTED",
+          "sample_age_ms": 0,
+          "reason": "DISCONNECTED",
+          "observation_is_physical_pass": false,
+          "water_level": null
+        },
+        "HC_SR04_2": {
+          "trigger_gpio": 16,
+          "echo_gpio": 17,
+          "distance_cm": null,
+          "valid": false,
+          "role": "DISTANCE",
+          "state": "DISCONNECTED",
+          "sample_age_ms": 0,
+          "reason": "DISCONNECTED",
+          "observation_is_physical_pass": false,
+          "water_level": null
+        },
+        "JSN_SR04T_1": {
+          "trigger_gpio": 14,
+          "echo_gpio": 15,
+          "distance_cm": null,
+          "valid": false,
+          "role": "WATER_LEVEL",
+          "state": "DISCONNECTED",
+          "sample_age_ms": 0,
+          "reason": "DISCONNECTED",
+          "observation_is_physical_pass": false,
+          "water_level": {
+            "percent": null,
+            "state": "NO_VALID_DISTANCE"
+          }
+        },
+        "JSN_SR04T_2": {
+          "trigger_gpio": 18,
+          "echo_gpio": 10,
+          "distance_cm": null,
+          "valid": false,
+          "role": "TBD",
+          "state": "DISCONNECTED",
+          "sample_age_ms": 0,
+          "reason": "DISCONNECTED",
+          "observation_is_physical_pass": false,
+          "water_level": {
+            "percent": null,
+            "state": "ROLE_TBD_LEVEL_DISABLED"
+          }
+        }
+      },
+      "pir": {
+        "motion": null,
+        "valid": false,
+        "quality": "QUALIFIED_FIELDS_UNAVAILABLE_OR_STALE"
+      },
+      "hx711": {
+        "grams": null,
+        "raw_counts": null,
+        "authority": "NO_CURRENT_CALIBRATED_MEASUREMENT",
+        "static_measurement_physical_pass": "YES_OWNER_ACCEPTED",
+        "calibration_persistence": "NOT_VERIFIED",
+        "closed_loop_35g": "NOT_VERIFIED"
+      },
+      "oled": {
+        "health": "STALE",
+        "initialized": null,
+        "prior_display_owner_evidence": "RETAINED_NO_RETEST_REQUIRED"
+      },
+      "button": {
+        "gpio": 21,
+        "pressed": null,
+        "request_count": null,
+        "actuator_blocked": true
+      },
+      "buzzer": {
+        "available": false,
+        "gpio": 2,
+        "polarity": "ACTIVE_LOW",
+        "vcc": 3.3,
+        "sequence": "2x200ms_gap200ms",
+        "max_sequence_ms": 600,
+        "cooldown_s": 60,
+        "max_tests_per_boot": 3,
+        "reason": "FRESH_REAL_LINK_AND_QUALIFIED_MANUAL_BUZZER_FIRMWARE_REQUIRED"
+      },
+      "servo": "LOCKED",
+      "pump": "LOCKED",
+      "actuator_execution": false,
+      "hardware_safety_telemetry": {
+        "servo_armed": null,
+        "servo_state": "UNKNOWN",
+        "pump_armed": null,
+        "pump_state": "UNKNOWN",
+        "auto_feed": null,
+        "auto_water": null,
+        "actuator_outputs_enabled": null,
+        "actuator_execution": false
+      },
+      "lock_labels_are_policy_not_physical_off_proof": true,
+      "diagnostic_snapshot_is_physical_pass": false,
+      "permissions": {
+        "VIEW_CAMERA": true,
+        "CONTROL_SYSTEM": false
+      }
+    },
+    "invalid": {
+      "schema_version": "hardware_diagnostics_v1",
+      "source": "SIMULATED",
+      "simulated": true,
+      "execution_context": "OFFLINE_TEST_ONLY",
+      "telemetry_time": {
+        "clock_domain": "HOST_MONOTONIC_MS",
+        "last_rx_ms": 100000,
+        "age_ms": 0,
+        "device_uptime_ms": 70000,
+        "is_UTC_timestamp": false
+      },
+      "connection": {
+        "connected": false,
+        "serial_connected": true,
+        "health": "ESP32_BAD_TELEMETRY",
+        "device": null,
+        "last_telemetry_at": null,
+        "stale": false,
+        "counters": {}
+      },
+      "camera": {
+        "status": "CAMERA_OFFLINE",
+        "source": "REAL",
+        "simulated": false,
+        "viewers": 0,
+        "max_viewers": 4,
+        "frame_slots": 1,
+        "buffered_bytes": 0,
+        "frame_id": null,
+        "width": null,
+        "producer_epoch": null,
+        "height": null,
+        "frame_age_seconds": null,
+        "annotations": "BURNED_IN_SAME_FRAME_NOT_STATUS_OVERLAY",
+        "stream_lease_seconds": 300.0,
+        "classification": "UNKNOWN",
+        "confidence": null,
+        "published": 0,
+        "replaced_frames": 0,
+        "rejected_frames": 0,
+        "actuator_execution": false
+      },
+      "ai": {
+        "classification": "UNKNOWN",
+        "health": "DISCONNECTED",
+        "last_observation_at": null
+      },
+      "FOOD_ROI": {
+        "mode": "FULL_FRAME",
+        "region": null,
+        "reviewed": false,
+        "producer_membership_proof": false
+      },
+      "ultrasonic": {
+        "HC_SR04_1": {
+          "trigger_gpio": 12,
+          "echo_gpio": 13,
+          "distance_cm": null,
+          "valid": false,
+          "role": "DISTANCE",
+          "state": "INVALID",
+          "sample_age_ms": 0,
+          "reason": "INVALID",
+          "observation_is_physical_pass": false,
+          "water_level": null
+        },
+        "HC_SR04_2": {
+          "trigger_gpio": 16,
+          "echo_gpio": 17,
+          "distance_cm": null,
+          "valid": false,
+          "role": "DISTANCE",
+          "state": "INVALID",
+          "sample_age_ms": 0,
+          "reason": "INVALID",
+          "observation_is_physical_pass": false,
+          "water_level": null
+        },
+        "JSN_SR04T_1": {
+          "trigger_gpio": 14,
+          "echo_gpio": 15,
+          "distance_cm": null,
+          "valid": false,
+          "role": "WATER_LEVEL",
+          "state": "INVALID",
+          "sample_age_ms": 0,
+          "reason": "INVALID",
+          "observation_is_physical_pass": false,
+          "water_level": {
+            "percent": null,
+            "state": "NO_VALID_DISTANCE"
+          }
+        },
+        "JSN_SR04T_2": {
+          "trigger_gpio": 18,
+          "echo_gpio": 10,
+          "distance_cm": null,
+          "valid": false,
+          "role": "TBD",
+          "state": "INVALID",
+          "sample_age_ms": 0,
+          "reason": "INVALID",
+          "observation_is_physical_pass": false,
+          "water_level": {
+            "percent": null,
+            "state": "ROLE_TBD_LEVEL_DISABLED"
+          }
+        }
+      },
+      "pir": {
+        "motion": null,
+        "valid": false,
+        "quality": "QUALIFIED_FIELDS_UNAVAILABLE_OR_STALE"
+      },
+      "hx711": {
+        "grams": null,
+        "raw_counts": null,
+        "authority": "NO_CURRENT_CALIBRATED_MEASUREMENT",
+        "static_measurement_physical_pass": "YES_OWNER_ACCEPTED",
+        "calibration_persistence": "NOT_VERIFIED",
+        "closed_loop_35g": "NOT_VERIFIED"
+      },
+      "oled": {
+        "health": "STALE",
+        "initialized": null,
+        "prior_display_owner_evidence": "RETAINED_NO_RETEST_REQUIRED"
+      },
+      "button": {
+        "gpio": 21,
+        "pressed": null,
+        "request_count": null,
+        "actuator_blocked": true
+      },
+      "buzzer": {
+        "available": false,
+        "gpio": 2,
+        "polarity": "ACTIVE_LOW",
+        "vcc": 3.3,
+        "sequence": "2x200ms_gap200ms",
+        "max_sequence_ms": 600,
+        "cooldown_s": 60,
+        "max_tests_per_boot": 3,
+        "reason": "FRESH_REAL_LINK_AND_QUALIFIED_MANUAL_BUZZER_FIRMWARE_REQUIRED"
+      },
+      "servo": "LOCKED",
+      "pump": "LOCKED",
+      "actuator_execution": false,
+      "hardware_safety_telemetry": {
+        "servo_armed": null,
+        "servo_state": "UNKNOWN",
+        "pump_armed": null,
+        "pump_state": "UNKNOWN",
+        "auto_feed": null,
+        "auto_water": null,
+        "actuator_outputs_enabled": null,
+        "actuator_execution": false
+      },
+      "lock_labels_are_policy_not_physical_off_proof": true,
+      "diagnostic_snapshot_is_physical_pass": false,
+      "permissions": {
+        "VIEW_CAMERA": true,
+        "CONTROL_SYSTEM": false
+      }
+    },
+    "timeout": {
+      "schema_version": "hardware_diagnostics_v1",
+      "source": "SIMULATED",
+      "simulated": true,
+      "execution_context": "OFFLINE_TEST_ONLY",
+      "telemetry_time": {
+        "clock_domain": "HOST_MONOTONIC_MS",
+        "last_rx_ms": 100000,
+        "age_ms": 0,
+        "device_uptime_ms": 70000,
+        "is_UTC_timestamp": false
+      },
+      "connection": {
+        "connected": true,
+        "serial_connected": true,
+        "health": "ESP32_CONNECTED",
+        "device": null,
+        "last_telemetry_at": null,
+        "stale": false,
+        "counters": {},
+        "mode": "diag_current_hardware",
+        "monotonic_ms": 70000
+      },
+      "camera": {
+        "status": "CAMERA_OFFLINE",
+        "source": "REAL",
+        "simulated": false,
+        "viewers": 0,
+        "max_viewers": 4,
+        "frame_slots": 1,
+        "buffered_bytes": 0,
+        "frame_id": null,
+        "width": null,
+        "producer_epoch": null,
+        "height": null,
+        "frame_age_seconds": null,
+        "annotations": "BURNED_IN_SAME_FRAME_NOT_STATUS_OVERLAY",
+        "stream_lease_seconds": 300.0,
+        "classification": "UNKNOWN",
+        "confidence": null,
+        "published": 0,
+        "replaced_frames": 0,
+        "rejected_frames": 0,
+        "actuator_execution": false
+      },
+      "ai": {
+        "classification": "UNKNOWN",
+        "health": "DISCONNECTED",
+        "last_observation_at": null
+      },
+      "FOOD_ROI": {
+        "mode": "FULL_FRAME",
+        "region": null,
+        "reviewed": false,
+        "producer_membership_proof": false
+      },
+      "ultrasonic": {
+        "HC_SR04_1": {
+          "trigger_gpio": 12,
+          "echo_gpio": 13,
+          "distance_cm": 15,
+          "valid": true,
+          "role": "DISTANCE",
+          "state": "OK",
+          "sample_age_ms": 0,
+          "reason": null,
+          "observation_is_physical_pass": false,
+          "water_level": null
+        },
+        "HC_SR04_2": {
+          "trigger_gpio": 16,
+          "echo_gpio": 17,
+          "distance_cm": null,
+          "valid": false,
+          "role": "DISTANCE",
+          "state": "TIMEOUT",
+          "sample_age_ms": 0,
+          "reason": "TIMEOUT",
+          "observation_is_physical_pass": false,
+          "water_level": null
+        },
+        "JSN_SR04T_1": {
+          "trigger_gpio": 14,
+          "echo_gpio": 15,
+          "distance_cm": 50,
+          "valid": true,
+          "role": "WATER_LEVEL",
+          "state": "OK",
+          "sample_age_ms": 0,
+          "reason": null,
+          "observation_is_physical_pass": false,
+          "water_level": {
+            "percent": 75.0,
+            "state": "CONFIGURED_GEOMETRY_ONLY",
+            "mount_id": "SIMULATED_TANK",
+            "physical_acceptance": false
+          }
+        },
+        "JSN_SR04T_2": {
+          "trigger_gpio": 18,
+          "echo_gpio": 10,
+          "distance_cm": 75,
+          "valid": true,
+          "role": "TBD",
+          "state": "OK",
+          "sample_age_ms": 0,
+          "reason": null,
+          "observation_is_physical_pass": false,
+          "water_level": {
+            "percent": null,
+            "state": "ROLE_TBD_LEVEL_DISABLED"
+          }
+        }
+      },
+      "pir": {
+        "motion": true,
+        "valid": true,
+        "quality": "VALID"
+      },
+      "hx711": {
+        "grams": 34.981,
+        "raw_counts": -700123.0,
+        "authority": "FIRMWARE_OBSERVATION_CONTEXT_PERSISTENCE_NOT_VERIFIED",
+        "static_measurement_physical_pass": "YES_OWNER_ACCEPTED",
+        "calibration_persistence": "NOT_VERIFIED",
+        "closed_loop_35g": "NOT_VERIFIED"
+      },
+      "oled": {
+        "health": "HEALTHY",
+        "initialized": true,
+        "prior_display_owner_evidence": "RETAINED_NO_RETEST_REQUIRED"
+      },
+      "button": {
+        "gpio": 21,
+        "pressed": true,
+        "request_count": 1,
+        "actuator_blocked": true
+      },
+      "buzzer": {
+        "available": false,
+        "gpio": 2,
+        "polarity": "ACTIVE_LOW",
+        "vcc": 3.3,
+        "sequence": "2x200ms_gap200ms",
+        "max_sequence_ms": 600,
+        "cooldown_s": 60,
+        "max_tests_per_boot": 3,
+        "reason": "FRESH_REAL_LINK_AND_QUALIFIED_MANUAL_BUZZER_FIRMWARE_REQUIRED"
+      },
+      "servo": "LOCKED",
+      "pump": "LOCKED",
+      "actuator_execution": false,
+      "hardware_safety_telemetry": {
+        "servo_armed": false,
+        "servo_state": "PWM_NOT_ATTACHED_CLOSE_PHYSICAL_UNVERIFIED",
+        "pump_armed": false,
+        "pump_state": "OUTPUT_NOT_ENABLED_PHYSICAL_OFF_UNVERIFIED",
+        "auto_feed": false,
+        "auto_water": false,
+        "actuator_outputs_enabled": 0,
+        "actuator_execution": false
+      },
+      "lock_labels_are_policy_not_physical_off_proof": true,
+      "diagnostic_snapshot_is_physical_pass": false,
+      "permissions": {
+        "VIEW_CAMERA": true,
+        "CONTROL_SYSTEM": false
+      }
+    },
+    "duplicate_frozen": {
+      "schema_version": "hardware_diagnostics_v1",
+      "source": "SIMULATED",
+      "simulated": true,
+      "execution_context": "OFFLINE_TEST_ONLY",
+      "telemetry_time": {
+        "clock_domain": "HOST_MONOTONIC_MS",
+        "last_rx_ms": 103500,
+        "age_ms": 0.0,
+        "device_uptime_ms": 70000,
+        "is_UTC_timestamp": false
+      },
+      "connection": {
+        "connected": false,
+        "serial_connected": true,
+        "health": "ESP32_STALE",
+        "device": null,
+        "last_telemetry_at": null,
+        "stale": true,
+        "counters": {}
+      },
+      "camera": {
+        "status": "CAMERA_OFFLINE",
+        "source": "REAL",
+        "simulated": false,
+        "viewers": 0,
+        "max_viewers": 4,
+        "frame_slots": 1,
+        "buffered_bytes": 0,
+        "frame_id": null,
+        "width": null,
+        "producer_epoch": null,
+        "height": null,
+        "frame_age_seconds": null,
+        "annotations": "BURNED_IN_SAME_FRAME_NOT_STATUS_OVERLAY",
+        "stream_lease_seconds": 300.0,
+        "classification": "UNKNOWN",
+        "confidence": null,
+        "published": 0,
+        "replaced_frames": 0,
+        "rejected_frames": 0,
+        "actuator_execution": false
+      },
+      "ai": {
+        "classification": "UNKNOWN",
+        "health": "DISCONNECTED",
+        "last_observation_at": null
+      },
+      "FOOD_ROI": {
+        "mode": "FULL_FRAME",
+        "region": null,
+        "reviewed": false,
+        "producer_membership_proof": false
+      },
+      "ultrasonic": {
+        "HC_SR04_1": {
+          "trigger_gpio": 12,
+          "echo_gpio": 13,
+          "distance_cm": null,
+          "valid": false,
+          "role": "DISTANCE",
+          "state": "STALE",
+          "sample_age_ms": 0,
+          "reason": "STALE",
+          "observation_is_physical_pass": false,
+          "water_level": null
+        },
+        "HC_SR04_2": {
+          "trigger_gpio": 16,
+          "echo_gpio": 17,
+          "distance_cm": null,
+          "valid": false,
+          "role": "DISTANCE",
+          "state": "STALE",
+          "sample_age_ms": 0,
+          "reason": "STALE",
+          "observation_is_physical_pass": false,
+          "water_level": null
+        },
+        "JSN_SR04T_1": {
+          "trigger_gpio": 14,
+          "echo_gpio": 15,
+          "distance_cm": null,
+          "valid": false,
+          "role": "WATER_LEVEL",
+          "state": "STALE",
+          "sample_age_ms": 0,
+          "reason": "STALE",
+          "observation_is_physical_pass": false,
+          "water_level": {
+            "percent": null,
+            "state": "NO_VALID_DISTANCE"
+          }
+        },
+        "JSN_SR04T_2": {
+          "trigger_gpio": 18,
+          "echo_gpio": 10,
+          "distance_cm": null,
+          "valid": false,
+          "role": "TBD",
+          "state": "STALE",
+          "sample_age_ms": 0,
+          "reason": "STALE",
+          "observation_is_physical_pass": false,
+          "water_level": {
+            "percent": null,
+            "state": "ROLE_TBD_LEVEL_DISABLED"
+          }
+        }
+      },
+      "pir": {
+        "motion": null,
+        "valid": false,
+        "quality": "QUALIFIED_FIELDS_UNAVAILABLE_OR_STALE"
+      },
+      "hx711": {
+        "grams": null,
+        "raw_counts": null,
+        "authority": "NO_CURRENT_CALIBRATED_MEASUREMENT",
+        "static_measurement_physical_pass": "YES_OWNER_ACCEPTED",
+        "calibration_persistence": "NOT_VERIFIED",
+        "closed_loop_35g": "NOT_VERIFIED"
+      },
+      "oled": {
+        "health": "STALE",
+        "initialized": null,
+        "prior_display_owner_evidence": "RETAINED_NO_RETEST_REQUIRED"
+      },
+      "button": {
+        "gpio": 21,
+        "pressed": null,
+        "request_count": null,
+        "actuator_blocked": true
+      },
+      "buzzer": {
+        "available": false,
+        "gpio": 2,
+        "polarity": "ACTIVE_LOW",
+        "vcc": 3.3,
+        "sequence": "2x200ms_gap200ms",
+        "max_sequence_ms": 600,
+        "cooldown_s": 60,
+        "max_tests_per_boot": 3,
+        "reason": "FRESH_REAL_LINK_AND_QUALIFIED_MANUAL_BUZZER_FIRMWARE_REQUIRED"
+      },
+      "servo": "LOCKED",
+      "pump": "LOCKED",
+      "actuator_execution": false,
+      "hardware_safety_telemetry": {
+        "servo_armed": null,
+        "servo_state": "UNKNOWN",
+        "pump_armed": null,
+        "pump_state": "UNKNOWN",
+        "auto_feed": null,
+        "auto_water": null,
+        "actuator_outputs_enabled": null,
+        "actuator_execution": false
+      },
+      "lock_labels_are_policy_not_physical_off_proof": true,
+      "diagnostic_snapshot_is_physical_pass": false,
+      "permissions": {
+        "VIEW_CAMERA": true,
+        "CONTROL_SYSTEM": false
+      }
+    },
+    "reconnect_waiting": {
+      "schema_version": "hardware_diagnostics_v1",
+      "source": "SIMULATED",
+      "simulated": true,
+      "execution_context": "OFFLINE_TEST_ONLY",
+      "telemetry_time": {
+        "clock_domain": "HOST_MONOTONIC_MS",
+        "last_rx_ms": 103500,
+        "age_ms": 200.0,
+        "device_uptime_ms": 70000,
+        "is_UTC_timestamp": false
+      },
+      "connection": {
+        "connected": false,
+        "serial_connected": true,
+        "health": "ESP32_STALE",
+        "device": null,
+        "last_telemetry_at": null,
+        "stale": true,
+        "counters": {}
+      },
+      "camera": {
+        "status": "CAMERA_OFFLINE",
+        "source": "REAL",
+        "simulated": false,
+        "viewers": 0,
+        "max_viewers": 4,
+        "frame_slots": 1,
+        "buffered_bytes": 0,
+        "frame_id": null,
+        "width": null,
+        "producer_epoch": null,
+        "height": null,
+        "frame_age_seconds": null,
+        "annotations": "BURNED_IN_SAME_FRAME_NOT_STATUS_OVERLAY",
+        "stream_lease_seconds": 300.0,
+        "classification": "UNKNOWN",
+        "confidence": null,
+        "published": 0,
+        "replaced_frames": 0,
+        "rejected_frames": 0,
+        "actuator_execution": false
+      },
+      "ai": {
+        "classification": "UNKNOWN",
+        "health": "DISCONNECTED",
+        "last_observation_at": null
+      },
+      "FOOD_ROI": {
+        "mode": "FULL_FRAME",
+        "region": null,
+        "reviewed": false,
+        "producer_membership_proof": false
+      },
+      "ultrasonic": {
+        "HC_SR04_1": {
+          "trigger_gpio": 12,
+          "echo_gpio": 13,
+          "distance_cm": null,
+          "valid": false,
+          "role": "DISTANCE",
+          "state": "STALE",
+          "sample_age_ms": 200,
+          "reason": "STALE",
+          "observation_is_physical_pass": false,
+          "water_level": null
+        },
+        "HC_SR04_2": {
+          "trigger_gpio": 16,
+          "echo_gpio": 17,
+          "distance_cm": null,
+          "valid": false,
+          "role": "DISTANCE",
+          "state": "STALE",
+          "sample_age_ms": 200,
+          "reason": "STALE",
+          "observation_is_physical_pass": false,
+          "water_level": null
+        },
+        "JSN_SR04T_1": {
+          "trigger_gpio": 14,
+          "echo_gpio": 15,
+          "distance_cm": null,
+          "valid": false,
+          "role": "WATER_LEVEL",
+          "state": "STALE",
+          "sample_age_ms": 200,
+          "reason": "STALE",
+          "observation_is_physical_pass": false,
+          "water_level": {
+            "percent": null,
+            "state": "NO_VALID_DISTANCE"
+          }
+        },
+        "JSN_SR04T_2": {
+          "trigger_gpio": 18,
+          "echo_gpio": 10,
+          "distance_cm": null,
+          "valid": false,
+          "role": "TBD",
+          "state": "STALE",
+          "sample_age_ms": 200,
+          "reason": "STALE",
+          "observation_is_physical_pass": false,
+          "water_level": {
+            "percent": null,
+            "state": "ROLE_TBD_LEVEL_DISABLED"
+          }
+        }
+      },
+      "pir": {
+        "motion": null,
+        "valid": false,
+        "quality": "QUALIFIED_FIELDS_UNAVAILABLE_OR_STALE"
+      },
+      "hx711": {
+        "grams": null,
+        "raw_counts": null,
+        "authority": "NO_CURRENT_CALIBRATED_MEASUREMENT",
+        "static_measurement_physical_pass": "YES_OWNER_ACCEPTED",
+        "calibration_persistence": "NOT_VERIFIED",
+        "closed_loop_35g": "NOT_VERIFIED"
+      },
+      "oled": {
+        "health": "STALE",
+        "initialized": null,
+        "prior_display_owner_evidence": "RETAINED_NO_RETEST_REQUIRED"
+      },
+      "button": {
+        "gpio": 21,
+        "pressed": null,
+        "request_count": null,
+        "actuator_blocked": true
+      },
+      "buzzer": {
+        "available": false,
+        "gpio": 2,
+        "polarity": "ACTIVE_LOW",
+        "vcc": 3.3,
+        "sequence": "2x200ms_gap200ms",
+        "max_sequence_ms": 600,
+        "cooldown_s": 60,
+        "max_tests_per_boot": 3,
+        "reason": "FRESH_REAL_LINK_AND_QUALIFIED_MANUAL_BUZZER_FIRMWARE_REQUIRED"
+      },
+      "servo": "LOCKED",
+      "pump": "LOCKED",
+      "actuator_execution": false,
+      "hardware_safety_telemetry": {
+        "servo_armed": null,
+        "servo_state": "UNKNOWN",
+        "pump_armed": null,
+        "pump_state": "UNKNOWN",
+        "auto_feed": null,
+        "auto_water": null,
+        "actuator_outputs_enabled": null,
+        "actuator_execution": false
+      },
+      "lock_labels_are_policy_not_physical_off_proof": true,
+      "diagnostic_snapshot_is_physical_pass": false,
+      "permissions": {
+        "VIEW_CAMERA": true,
+        "CONTROL_SYSTEM": false
+      }
+    },
+    "unsafe_latched": {
+      "schema_version": "hardware_diagnostics_v1",
+      "source": "SIMULATED",
+      "simulated": true,
+      "execution_context": "OFFLINE_TEST_ONLY",
+      "telemetry_time": {
+        "clock_domain": "HOST_MONOTONIC_MS",
+        "last_rx_ms": 103900,
+        "age_ms": 0.0,
+        "device_uptime_ms": 70000,
+        "is_UTC_timestamp": false
+      },
+      "connection": {
+        "connected": false,
+        "serial_connected": true,
+        "health": "ESP32_BAD_TELEMETRY",
+        "device": null,
+        "last_telemetry_at": null,
+        "stale": false,
+        "counters": {}
+      },
+      "camera": {
+        "status": "CAMERA_OFFLINE",
+        "source": "REAL",
+        "simulated": false,
+        "viewers": 0,
+        "max_viewers": 4,
+        "frame_slots": 1,
+        "buffered_bytes": 0,
+        "frame_id": null,
+        "width": null,
+        "producer_epoch": null,
+        "height": null,
+        "frame_age_seconds": null,
+        "annotations": "BURNED_IN_SAME_FRAME_NOT_STATUS_OVERLAY",
+        "stream_lease_seconds": 300.0,
+        "classification": "UNKNOWN",
+        "confidence": null,
+        "published": 0,
+        "replaced_frames": 0,
+        "rejected_frames": 0,
+        "actuator_execution": false
+      },
+      "ai": {
+        "classification": "UNKNOWN",
+        "health": "DISCONNECTED",
+        "last_observation_at": null
+      },
+      "FOOD_ROI": {
+        "mode": "FULL_FRAME",
+        "region": null,
+        "reviewed": false,
+        "producer_membership_proof": false
+      },
+      "ultrasonic": {
+        "HC_SR04_1": {
+          "trigger_gpio": 12,
+          "echo_gpio": 13,
+          "distance_cm": null,
+          "valid": false,
+          "role": "DISTANCE",
+          "state": "INVALID",
+          "sample_age_ms": 0,
+          "reason": "INVALID",
+          "observation_is_physical_pass": false,
+          "water_level": null
+        },
+        "HC_SR04_2": {
+          "trigger_gpio": 16,
+          "echo_gpio": 17,
+          "distance_cm": null,
+          "valid": false,
+          "role": "DISTANCE",
+          "state": "INVALID",
+          "sample_age_ms": 0,
+          "reason": "INVALID",
+          "observation_is_physical_pass": false,
+          "water_level": null
+        },
+        "JSN_SR04T_1": {
+          "trigger_gpio": 14,
+          "echo_gpio": 15,
+          "distance_cm": null,
+          "valid": false,
+          "role": "WATER_LEVEL",
+          "state": "INVALID",
+          "sample_age_ms": 0,
+          "reason": "INVALID",
+          "observation_is_physical_pass": false,
+          "water_level": {
+            "percent": null,
+            "state": "NO_VALID_DISTANCE"
+          }
+        },
+        "JSN_SR04T_2": {
+          "trigger_gpio": 18,
+          "echo_gpio": 10,
+          "distance_cm": null,
+          "valid": false,
+          "role": "TBD",
+          "state": "INVALID",
+          "sample_age_ms": 0,
+          "reason": "INVALID",
+          "observation_is_physical_pass": false,
+          "water_level": {
+            "percent": null,
+            "state": "ROLE_TBD_LEVEL_DISABLED"
+          }
+        }
+      },
+      "pir": {
+        "motion": null,
+        "valid": false,
+        "quality": "QUALIFIED_FIELDS_UNAVAILABLE_OR_STALE"
+      },
+      "hx711": {
+        "grams": null,
+        "raw_counts": null,
+        "authority": "NO_CURRENT_CALIBRATED_MEASUREMENT",
+        "static_measurement_physical_pass": "YES_OWNER_ACCEPTED",
+        "calibration_persistence": "NOT_VERIFIED",
+        "closed_loop_35g": "NOT_VERIFIED"
+      },
+      "oled": {
+        "health": "STALE",
+        "initialized": null,
+        "prior_display_owner_evidence": "RETAINED_NO_RETEST_REQUIRED"
+      },
+      "button": {
+        "gpio": 21,
+        "pressed": null,
+        "request_count": null,
+        "actuator_blocked": true
+      },
+      "buzzer": {
+        "available": false,
+        "gpio": 2,
+        "polarity": "ACTIVE_LOW",
+        "vcc": 3.3,
+        "sequence": "2x200ms_gap200ms",
+        "max_sequence_ms": 600,
+        "cooldown_s": 60,
+        "max_tests_per_boot": 3,
+        "reason": "FRESH_REAL_LINK_AND_QUALIFIED_MANUAL_BUZZER_FIRMWARE_REQUIRED"
+      },
+      "servo": "LOCKED",
+      "pump": "LOCKED",
+      "actuator_execution": false,
+      "hardware_safety_telemetry": {
+        "servo_armed": null,
+        "servo_state": "UNKNOWN",
+        "pump_armed": null,
+        "pump_state": "UNKNOWN",
+        "auto_feed": null,
+        "auto_water": null,
+        "actuator_outputs_enabled": null,
+        "actuator_execution": false
+      },
+      "lock_labels_are_policy_not_physical_off_proof": true,
+      "diagnostic_snapshot_is_physical_pass": false,
+      "permissions": {
+        "VIEW_CAMERA": true,
+        "CONTROL_SYSTEM": false
+      }
+    }
+  }
+}

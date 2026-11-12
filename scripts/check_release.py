@@ -13,7 +13,9 @@ from pathlib import Path
 
 PROFILES=("esp32dev_sim","esp32dev_hw_safe","esp32s3_n16r8_sim","esp32s3_n16r8_hw_safe",
           "esp32s3_n16r8_hw_safe_uart","diag_hx711","diag_rtc","diag_i2c","diag_food_sensor",
-          "diag_water_sensor","diag_oled_button_buzzer")
+          "diag_water_sensor","diag_oled_button_buzzer","esp32s3_16mb_no_psram_hw_safe_uart",
+          "diag_all_sensors","diag_hx711_surrogate","diag_rtc_surrogate","diag_i2c_surrogate",
+          "diag_food_sensor_surrogate","diag_water_sensor_surrogate","diag_oled_button_buzzer_surrogate")
 
 
 class CheckFailure(RuntimeError):
@@ -79,6 +81,20 @@ def main():
             if kind=="safety":
                 if "7 UART v1 vectors match" not in output: raise CheckFailure("UART vector verification missing")
                 summary["checks"]["uart_vectors"]=7
+        loop_binary=build/f"firmware_loop{'.exe' if os.name=='nt' else ''}"
+        loop_evidence=logs/("firmware-loop-"+datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ"))
+        execute("compile-firmware-loop",[*command,"-std=c++17","-O1","-Wall","-Wextra","-Wpedantic","-Wshadow","-Werror",
+                "-Wno-unused-variable",*(["-Wno-nullability-completeness"] if zig else []),
+                f"-I{root/'esp32/test/arduino_stub'}",f"-I{root/'esp32/include'}",
+                root/"esp32/test/firmware_loop.cpp","-o",loop_binary],root,logs)
+        execute("firmware-loop",[sys.executable,root/"scripts/test_firmware_loop.py","--binary",loop_binary,
+                "--output",loop_evidence],root,logs)
+        loop_result=json.loads((loop_evidence/"summary.json").read_text(encoding="utf-8"))
+        if loop_result.get("result")!="PASS" or loop_result.get("physical_hardware_used") is not False:
+            raise CheckFailure("firmware-loop result/scope mismatch")
+        summary["checks"]["firmware_loop"]={key:loop_result[key] for key in
+            ("named_cases","cpp_assertions","decoded_firmware_reports","physical_hardware_used")}
+        summary["checks"]["firmware_loop"]["evidence_directory"]=str(loop_evidence)
         guards=execute("compile-guards",[sys.executable,root/"scripts/test_safe_build_guards.py","--zig" if zig else "--compiler",zig or compiler],root,logs)
         match=re.search(r"(\d+)/(\d+) pass",guards)
         if not match or match.group(1)!=match.group(2): raise CheckFailure("compile guard summary missing/mismatched")
@@ -103,6 +119,7 @@ def main():
         print(f"\nRELEASE CHECK: {summary['status']} | milestone M2 | hardware NOT VERIFIED | AI NOT TRAINED")
         print(f"Python: {checks.get('python','NOT RUN')} | C++: {checks.get('native_safety','NOT RUN')} safety + {checks.get('native_drivers','NOT RUN')} driver")
         print(f"UART: {checks.get('uart_vectors','NOT RUN')}/7 | guards: {checks.get('compile_guards','NOT RUN')} | firmware: {len(checks.get('firmware',{}))}/{len(PROFILES)}")
+        print(f"Offline firmware loop: {checks.get('firmware_loop','NOT RUN')} (host adapters, never physical PASS)")
         print(f"Dataset: {checks.get('dataset',{}).get('status','NOT RUN')} | complete logs/summary: {logs}")
     return exit_code
 

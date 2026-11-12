@@ -1,0 +1,2 @@
+# Core API/database/serial/mock runtime only; no OpenCV/GPU/ML dependency.
+-r requirements-runtime.txt

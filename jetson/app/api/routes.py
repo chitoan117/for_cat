@@ -55,6 +55,8 @@ class Status(BaseModel):
     ai: dict = Field(default_factory=dict)
     readiness: dict = Field(default_factory=dict)
     observation_service: dict = Field(default_factory=dict)
+    esp32_telemetry: dict = Field(default_factory=dict)
+    system_state: dict = Field(default_factory=dict)
 
 
 class FeedService:
@@ -232,20 +234,38 @@ def health():
 
 @router.get("/status", response_model=Status)
 def status(request: Request):
-    result = request.app.state.feeds.status()
+    reader = getattr(request.app.state, 'esp32_reader', None)
+    bridge = reader.status() if reader is not None else None
+    if bridge is not None:
+        online = bridge['health'] == 'ESP32_CONNECTED'
+        with request.app.state.feeds.lock:
+            cached = [FeedResult(request_id=key, state=value)
+                      for key, value in request.app.state.feeds.feeds.items()]
+        result = Status(esp32_online=online, feeds=cached, esp32_telemetry=bridge,
+                        link_state=LinkState.ONLINE if online else LinkState.OFFLINE,
+                        sensors=ComponentState.NOT_VALIDATED if online else ComponentState.NOT_CONNECTED)
+    else:
+        result = request.app.state.feeds.status()
     pipeline = request.app.state.pipeline
     try:
         result.camera = (pipeline.camera_state if pipeline.frames or pipeline.running else
                          ComponentState(request.app.state.camera.health()))
     except (ValueError, OSError, RuntimeError):
         result.camera = ComponentState.FAULT
-    result.esp32 = (ComponentState.MOCK if request.app.state.esp32_mode == "MOCK"
+    result.esp32 = (ComponentState.ONLINE if bridge is not None and result.esp32_online
+                    else ComponentState.FAULT if bridge is not None and bridge['health'] == 'ESP32_BAD_TELEMETRY'
+                    else ComponentState.DEGRADED if bridge is not None and bridge['health'] == 'ESP32_STALE'
+                    else ComponentState.OFFLINE if bridge is not None
+                    else ComponentState.MOCK if request.app.state.esp32_mode == "MOCK"
                     else ComponentState.DEGRADED if result.link_state == LinkState.DEGRADED
                     else ComponentState.ONLINE if result.esp32_online else ComponentState.OFFLINE)
     if type(request.app.state.transport).__module__.startswith("app.simulator"):
         water = request.app.state.transport.water
         result.simulated_water = {"state": water.state.value, "pump_simulated_on": water.pump_on}
     result.ai = pipeline.status()
+    if bridge is not None:
+        result.system_state = request.app.state.system_state.snapshot()
+        result.ai = result.system_state['ai']
     result.observation_service = request.app.state.observations.status()
     db_state = request.app.state.records.health()
     observation_ready = pipeline.running and pipeline.db_state == "READY" and \
@@ -264,10 +284,14 @@ def readiness(request: Request):
     pipeline = request.app.state.pipeline
     database = request.app.state.records.health()
     link_ready = (request.app.state.hardware.esp32_transport == "MOCK" or
-                  request.app.state.feeds.link.state == LinkState.ONLINE)
+                   request.app.state.feeds.link.state == LinkState.ONLINE)
+    reader = getattr(request.app.state, 'esp32_reader', None)
+    bridge = reader.status() if reader is not None else None
+    if bridge is not None:
+        link_ready = bridge['health'] == 'ESP32_CONNECTED'
     return {"api": "READY", "database": database,
             "camera": pipeline.camera_state.value, "ai": pipeline.ai_state.value,
-            "esp32_link": request.app.state.feeds.link.state.value,
+            "esp32_link": bridge['health'] if bridge is not None else request.app.state.feeds.link.state.value,
             "observation_service": request.app.state.observations.state.value,
             "ready": link_ready and database == "READY" and pipeline.running and pipeline.db_state == "READY" and
                      pipeline.camera_state in (ComponentState.MOCK, ComponentState.ONLINE) and
@@ -284,6 +308,10 @@ def events(request: Request, limit: int = 100):
              responses={202: {"model": FeedResult}, 400: {"model": ApiError}, 413: {"model": ApiError},
                         429: {"model": ApiError}, 503: {"model": ApiError}})
 def feed_manual(request: Request, response: Response, idempotency_key: str | None = Header(default=None)):
+    if getattr(request.app.state, 'esp32_reader', None) is not None:
+        # Do not create fake feed/history records, even though MOCK is the inert
+        # legacy transport behind this read-only integration mode.
+        raise HTTPException(status_code=503, detail='UNATTENDED_SAFE_MODE: actuator execution blocked')
     result = request.app.state.feeds.request_feed(idempotency_key)
     response.status_code = 202 if result.state == FeedState.PENDING else 200
     return result

@@ -1,0 +1,14 @@
+name: for_cat_gcc75_r2_offline_candidate
+description: Offline optional panel harness reusing the existing FOR_CAT Flutter application.
+publish_to: none
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.0
+  feeder_demo:
+    path: D:/DA_KT_NC/feeder_demo
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

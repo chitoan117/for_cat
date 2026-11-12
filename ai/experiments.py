@@ -19,7 +19,7 @@ class Experiment(BaseModel):
     schema_version: Literal[1]=1
     experiment_id: str=Field(pattern=r"^[a-z0-9_-]{1,64}$")
     dataset_version: str=Field(pattern=r"^[a-z0-9_-]{1,64}$")
-    task: Literal["detector","identity","behavior"]
+    task: Literal["detector","identity","behavior","behavior_v2"]
     architecture: str=Field(min_length=1,max_length=64)
     seed: int=Field(ge=0,le=2**32-1)
     input_size: tuple[int,int]
@@ -58,7 +58,7 @@ def source_version(root):
     except (OSError,subprocess.TimeoutExpired):
         revision=dirty=None
     sha=hashlib.sha256(); count=0
-    for directory in ("ai","jetson/app","esp32/include","esp32/src","scripts"):
+    for directory in ("ai","jetson/app","jetson/ai","esp32/include","esp32/src","scripts"):
         for path in sorted((root/directory).rglob("*")):
             if path.is_file() and path.suffix in (".py",".h",".cpp",".ps1",".sh") and "__pycache__" not in path.parts:
                 sha.update(path.relative_to(root).as_posix().encode()); sha.update(bytes.fromhex(digest(path))); count+=1
@@ -75,6 +75,8 @@ def prepare_bundle(config, release, output, *, apply=False):
         raise ValueError("validated nonempty versioned dataset required")
     if release["validation_status"]=="TEST_CANDIDATE":
         raise ValueError("final test candidate cannot be a training experiment source")
+    if (experiment.task == "behavior_v2") != (release.get("label_schema_version", 1) == 2):
+        raise ValueError("experiment task must match dataset label schema version")
     result={"schema_version":1,"status":"EXPERIMENT_PREPARED_NOT_TRAINED", "created_at":datetime.now(timezone.utc).isoformat(),
         "config":experiment.model_dump(mode="json"),"dataset_release":release,"source":source_version(Path(__file__).resolve().parent.parent),
         "environment":{"python":platform.python_version(),"platform":platform.platform(),
@@ -90,7 +92,7 @@ class ModelEntry(BaseModel):
     model_config=ConfigDict(extra="forbid",allow_inf_nan=False)
     schema_version: Literal[1]=1
     model_id: str=Field(pattern=r"^[a-z0-9_-]{1,64}$")
-    task: Literal["detector","identity","behavior"]
+    task: Literal["detector","identity","behavior","behavior_v2"]
     dataset_version: str=Field(pattern=r"^[a-z0-9_-]{1,64}$")
     training_experiment: str=Field(pattern=r"^[a-z0-9_-]{1,64}$")
     file: str

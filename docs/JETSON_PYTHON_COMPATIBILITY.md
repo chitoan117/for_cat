@@ -1,5 +1,7 @@
 # Jetson Python compatibility — source/dependency audit, NOT JETSON VERIFIED
 
+> Historical source minimum audit. Actual Nano now reported Python3.6.9/L4T32.7.6/OpenCV4.8/GPU bindings, incompatible with this modern backend. Current recommendation/working low-level path: `JETSON_NANO_RUNTIME_COMPATIBILITY.md`; system Python/GPU stack must remain unchanged. Old “when Nano arrives” steps below do not override actual facts.
+
 **Minimum current runtime: Python 3.10.** Host execution is Python 3.14.3; no Python 3.10 or Jetson interpreter was executed here. This is an evidence-based minimum, not a tested Nano compatibility claim.
 
 | Feature/dependency | Evidence | Minimum constraint |

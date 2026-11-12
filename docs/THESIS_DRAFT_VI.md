@@ -54,7 +54,7 @@ Water policy có stable-sample/hysteresis, yêu cầu tiến triển, maximum-ru
 
 ## 9. Kiến trúc cảm biến
 
-Có HX711 raw/average/tare/calibration domain, DS3231 presence/read/explicit set/BCD/calendar/OSF, bounded ultrasonic core dùng cho food/water với geometry riêng, SSD1306 tối thiểu, button intent/debounce và active-buzzer patterns. Pin truyền qua cấu hình; mặc định chưa gán bị từ chối trước GPIO. Health/snapshot giữ optional value, timestamp/freshness và không nâng HEALTHY từ compile success.
+CóHX711raw/average/tare/calibration,boundedultrasonicfood/water,SSD1306/button/buzzer,và **RTC DS1302 3-wire CLK16/DAT17/CE18**. RTC hardware changed from planned DS3231 to available DS1302 during M4 physical bring-up. DS1302latchesLSB/inputrising/outputfalling,CH/WP/BCD/calendar/readback;khôngI2C/OSF/centuryDS3231. OLEDI2C8/9giữriêng. PinscandidatekhôngphysicalPASS;Health/optional/timestamps/freshnessvàRTC_INVALID/day/cooldownsemanticsgiữgeneric. PhysicalRTCaccuracy/retention: [CHỜ KẾT QUẢ THỰC NGHIỆM].
 
 Calibration record version/CRC riêng với safety counters, không factor/geometry giả định. Codec/fake I/O và adapter compile có evidence; accuracy, timing và NVS retention/interruption trên board thật chưa có. Sensor diagnostic ASCII không phải normal UART v1.
 

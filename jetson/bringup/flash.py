@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 REAL_ENVS=("esp32s3_16mb_no_psram_hw_safe_uart","diag_i2c","diag_rtc","diag_hx711",
-           "diag_food_sensor","diag_water_sensor","diag_oled_button_buzzer")
+           "diag_food_sensor","diag_water_sensor","diag_oled_button_buzzer","diag_all_sensors")
 
 
 def digest(path):

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ForCat — live SystemState</title>
+  <style>
+    body{font:18px system-ui,sans-serif;margin:0;background:#111923;color:#ecf2f8}main{max-width:1100px;margin:auto;padding:20px}
+    header{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}h1{font-size:28px}h2{font-size:18px;color:#b1c1d0}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}.card{background:#1c2936;border:1px solid #405266;border-radius:8px;padding:16px}
+    .value{font-size:28px;font-weight:600;overflow-wrap:anywhere}.detail{font-size:15px;color:#bdcbd7;overflow-wrap:anywhere;margin-top:8px}
+    #connection{padding:10px;border-radius:6px;background:#503c17}#connection[data-live="true"]{background:#15482c}
+    .safe{padding:12px;background:#293c4b;border-left:4px solid #77cbb7;margin:16px 0}button{padding:12px;font:inherit;width:100%}nav a{color:#9bdef5;margin-right:20px}
+    pre{white-space:pre-wrap;word-break:break-word;font-size:14px}summary{cursor:pointer;margin:18px 0}
+  </style>
+</head>
+<body><main>
+  <header><h1>FOR_CAT <span id="view-name">Live</span></h1><div id="connection" data-live="false">Đang kết nối backend…</div></header>
+  <nav><a href="/kiosk">Kiosk</a><a href="/app">App</a><a href="/api/status">REST state</a></nav>
+  <div class="safe">Actuator execution: <strong>BLOCKED — UNATTENDED SAFE MODE</strong>. Target tương lai: 35 g thực cấp, HX711 closed-loop.</div>
+  <div class="grid">
+    <section class="card"><h2>ESP32 · USB Serial</h2><div class="value" id="esp32">UNKNOWN</div><div class="detail" id="esp32-detail">—</div></section>
+    <section class="card"><h2>AI · TensorRT CAT / DOG / NONE</h2><div class="value" id="ai">UNKNOWN</div><div class="detail" id="ai-detail">Không dùng mock trong REAL mode</div></section>
+    <section class="card"><h2>PIR HC-SR501</h2><div class="value" id="motion">—</div><div class="detail" id="motion-detail">—</div></section>
+    <section class="card"><h2>HC-SR04 #1 · APPROACH</h2><div class="value" id="approach">—</div><div class="detail" id="approach-detail">—</div></section>
+    <section class="card"><h2>JSN-SR04T #1 · WATER_OPERATIONAL</h2><div class="value" id="water">—</div><div class="detail" id="water-detail">—</div></section>
+    <section class="card"><h2>HX711 · load cell</h2><div class="value" id="weight">—</div><div class="detail" id="weight-detail">Gram calibration DEFERRED</div></section>
+    <section class="card"><h2>OLED · 0x3C</h2><div class="value" id="oled">UNKNOWN</div></section>
+    <section class="card"><h2>Manual button · GPIO21</h2><div class="value" id="button">—</div><div class="detail" id="button-detail">Diagnostic only</div></section>
+    <section class="card"><h2>Servo / pump safety</h2><div class="value" id="safety">UNKNOWN</div><div class="detail" id="safety-detail">Actuator execution blocked</div></section>
+    <section class="card"><h2>Inventory #2</h2><div class="value">NOT_WIRED</div><div class="detail">Food: null · Water: null · GPIO TBD</div></section>
+    <section class="card"><h2>Jetson time / Meal Plan</h2><div class="value" id="time">UNKNOWN</div><div class="detail">Scheduler chưa được bật; không tự cho ăn.</div></section>
+    <section class="card"><h2>Decision preview · DRY RUN</h2><div class="value" id="behavior">UNKNOWN</div><div class="detail" id="decision-detail">Threshold chưa cấu hình; không actuator execution.</div></section>
+    <section class="card"><h2>Feed Now · chỉ DRY RUN</h2>
+      <button id="feed-preview" type="button" disabled>Feed Now — DRY RUN</button>
+      <div class="detail">Chỉ thử request qua arbiter. Không cấp thức ăn; không chạy servo/pump.</div>
+      <div class="detail" id="feed-request-status" role="status" aria-live="polite">Chờ state REAL an toàn từ backend.</div>
+      <div class="detail" id="feed-request-id">Request ID: —</div>
+      <pre id="feed-request-result">null</pre>
+    </section>
+  </div>
+  <p class="detail" id="updated">Chưa có SystemState</p>
+  <details><summary>Raw coherent SystemState</summary><pre id="raw-state">null</pre></details>
+</main><script src="/assets/feed-preview.js" defer></script><script src="/assets/system-state.js" defer></script></body>
+</html>

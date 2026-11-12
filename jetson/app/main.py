@@ -1,6 +1,10 @@
 from contextlib import asynccontextmanager
 from pathlib import Path
 import sqlite3
+import os
+from threading import RLock
+from fastapi.staticfiles import StaticFiles
+from app.frontend_assets import resolve_flutter_frontend
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
@@ -24,6 +28,19 @@ from app.serial_link.real_transport import RealEsp32SerialTransport
 from app.serial_link.transport import SerialTransport
 from app.storage.event_store import EventStore, SQLiteEventStore
 from app.storage.repositories import RecordRepository
+from app.device_state import Esp32StateReader
+from app.api.esp32_routes import router as esp32_router
+from app.api.system_routes import router as system_router
+from app.system_state import RealHardwareProvider, MockProvider, SystemStateService
+from app.ai_state import AiStateReader
+from app.api.meal_plan_routes import router as meal_plan_router
+from app.scheduled_worker import ScheduledWorker
+from app.hx711_view import Hx711GramView
+from app.api.hx711_routes import router as hx711_router
+from app.api.meal_observation_routes import router as meal_observation_router
+from app.api.water_routes import router as water_router
+from app.water_control import startup_off as water_startup_off
+from app.api.reservoir_routes import router as reservoir_router
 
 
 def create_app(
@@ -36,8 +53,28 @@ def create_app(
     identity_model: IdentityModel | None = None,
     behavior_model: BehaviorModel | None = None,
     pipeline_source: str = "UNVALIDATED",
+    flutter_web_dir: str | Path | None = None,
+    scheduled_worker_enabled: bool | None = None,
 ) -> FastAPI:
     hardware = hardware if hardware is not None else HardwareConfig.from_env()
+    frontend = resolve_flutter_frontend(flutter_web_dir or os.environ.get('FORCAT_FLUTTER_WEB_DIR'))
+    bridge_mode = os.environ.get('ESP32_BRIDGE_ENABLED', '0')
+    if bridge_mode not in ('0', '1'):
+        raise ValueError('ESP32_BRIDGE_ENABLED must be 0 or 1')
+    if bridge_mode == '1' and hardware.esp32_transport != 'MOCK':
+        raise ValueError('C++ bridge owns serial; binary SERIAL transport must not run concurrently')
+    provider_mode = os.environ.get('SYSTEM_STATE_PROVIDER', 'REAL')
+    if provider_mode not in ('REAL', 'MOCK'):
+        raise ValueError('SYSTEM_STATE_PROVIDER must be REAL or MOCK')
+    worker_flag = os.environ.get('SCHEDULED_DRY_RUN_WORKER_ENABLED', '0')
+    if worker_flag not in ('0', '1'):
+        raise ValueError('SCHEDULED_DRY_RUN_WORKER_ENABLED must be 0 or 1')
+    enabled = worker_flag == '1' if scheduled_worker_enabled is None else scheduled_worker_enabled
+    if type(enabled) is not bool or (enabled and (bridge_mode != '1' or provider_mode != 'REAL')):
+        raise ValueError('Scheduled DRY RUN worker requires REAL SystemState and existing C++ bridge')
+    poll_seconds = float(os.environ.get('SCHEDULED_DRY_RUN_POLL_SECONDS', '2'))
+    if not 1 <= poll_seconds <= 30:
+        raise ValueError('Scheduled DRY RUN poll interval must be 1..30s')
     db_path = hardware.db_path if db_path is None else db_path
     if max_events == MAX_EVENTS:
         max_events = hardware.max_events
@@ -67,9 +104,13 @@ def create_app(
 
     @asynccontextmanager
     async def lifespan(application: FastAPI):
+        await application.state.system_state.start()
+        await application.state.scheduled_worker.start()
         try:
             yield
         finally:
+            await application.state.scheduled_worker.stop()
+            await application.state.system_state.stop()
             worker_stopped = application.state.observations.stop()
             if isinstance(serial_transport, RealEsp32SerialTransport):
                 serial_transport.close()
@@ -86,6 +127,12 @@ def create_app(
         get_logger().error("local storage unavailable", extra={"component": "storage", "event_type": "DATABASE_FAILURE"})
         return JSONResponse(status_code=503, content={"detail": "local storage unavailable"})
     application.state.store = event_store
+    application.state.flutter_web_dir = frontend
+    application.state.store_path = str(db_path)
+    if bridge_mode == '1':
+        water_startup_off(db_path)
+    application.state.meal_plans = None
+    application.state.meal_plan_lock = RLock()
     application.state.records = records
     application.state.preference_min_sessions = hardware.preference_min_sessions
     application.state.behavior_engine = TemporalEngine(hardware.behavior_confirm_frames,
@@ -105,9 +152,16 @@ def create_app(
     application.state.transport = serial_transport
     application.state.camera = camera_provider
     application.state.esp32_mode = hardware.esp32_transport
+    application.state.esp32_reader = Esp32StateReader(db_path) if bridge_mode == '1' else None
+    application.state.system_state = SystemStateService(
+        RealHardwareProvider(application.state.esp32_reader or Esp32StateReader(db_path), AiStateReader(db_path), Hx711GramView(db_path), reservoir_calibration_path=Path(db_path).parent / 'reservoir_calibration.json')
+        if provider_mode == 'REAL' else MockProvider())
+    application.state.scheduled_worker = ScheduledWorker(db_path,
+        application.state.system_state.snapshot, application.state.meal_plan_lock,
+        enabled=enabled, poll_seconds=poll_seconds)
     # Phase 2 never forwards feed commands to physical hardware.
     application.state.feeds = FeedService(serial_transport, event_store,
-                                          allow_feed_requests=hardware.esp32_transport == "MOCK",
+                                          allow_feed_requests=hardware.esp32_transport == "MOCK" and bridge_mode == '0',
                                           records=records)
     if hardware.cors_origins:
         application.add_middleware(CORSMiddleware, allow_origins=list(hardware.cors_origins),
@@ -133,6 +187,15 @@ def create_app(
         return await call_next(request)
 
     application.include_router(router)
+    if frontend is not None:
+        application.mount('/flutter', StaticFiles(directory=str(frontend), html=False), name='flutter-assets')
+    application.include_router(esp32_router)
+    application.include_router(system_router)
+    application.include_router(meal_plan_router)
+    application.include_router(hx711_router)
+    application.include_router(meal_observation_router)
+    application.include_router(water_router)
+    application.include_router(reservoir_router)
     return application
 
 

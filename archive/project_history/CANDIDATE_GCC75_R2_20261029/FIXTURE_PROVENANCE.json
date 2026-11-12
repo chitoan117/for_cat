@@ -1,0 +1,27 @@
+{
+  "revision": "GCC75_R2",
+  "source": "SIMULATED",
+  "execution_context": "OFFLINE_TEST_ONLY",
+  "physical_pass": false,
+  "wire_mode": "diag_current_hardware",
+  "kit_profile": "diag_four_ultrasonic",
+  "wire_not_rewritten_to_add_simulation_protocol_fields": true,
+  "fixtures": {
+    "fixtures/r1_quad_reports.log": {
+      "sha256": "9d733f6abc674070a14562bec5d4bec8f2e95a0fe44bb6cd8152276c6b62f6f3",
+      "bytes": 8630,
+      "origin": "SYNTHETIC_FIRMWARE_LOOP_OR_EXPLICIT_SYNTHETIC_MUTATION"
+    },
+    "fixtures/synthetic_wire.json": {
+      "sha256": "0fc03aa4b6d6e47078be76e0aca73c14089227af39df0b17659b57a220e758df",
+      "bytes": 6252,
+      "origin": "SYNTHETIC_FIRMWARE_LOOP_OR_EXPLICIT_SYNTHETIC_MUTATION"
+    },
+    "fixtures/synthetic_wire.jsonl": {
+      "sha256": "dcb3225c55a5f5add451ffb2fe5e4d050128182309cd22d34a89c09d40184187",
+      "bytes": 4340,
+      "origin": "SYNTHETIC_FIRMWARE_LOOP_OR_EXPLICIT_SYNTHETIC_MUTATION"
+    }
+  },
+  "API_UI_generated_fixture_location": "NEW validation_windows_*/fixtures, output not source input"
+}

@@ -1,0 +1,7 @@
+# Local observability and operational bounds
+
+`jetson/app/observability.py` writes structured JSON lines to stderr with UTC timestamp, severity, component, request_id, session_id, event_type and a message truncated to 256 characters. Feed state changes are logged without images, model frames, UART payload bytes or arbitrary client bodies. `GET /api/v1/status` exposes bounded in-memory link sent/received/failure/pending counts; it does not certify physical sensor health. FastAPI/uvicorn access logs should be configured separately.
+
+For sustained Jetson operation, configure journald retention (`SystemMaxUse`/`RuntimeMaxUse`) or a rotating application log handler with a fixed maximum file size and backup count; do not redirect an unbounded stream to a single SD card file. Preserve privacy by not logging raw video, cat images, credentials or arbitrary notes. Rotate SQLite backups and monitor disk usage separately from event retention.
+
+Controls in source: at most 1,000 generic events by default, 10,000 typed records per kind, 10,000 durable feed ledger rows (fail closed when full), up to 256 tracked serial pending IDs, 30 new manual requests per minute per API process, 1–64 safe idempotency key characters, no POST body on feed endpoint, bounded API list sizes and capped dataset parser/CLI inputs. In-memory rate controls reset on service restart and are **not** a substitute for authenticated network limits. Physical actions remain blocked in SERIAL mode.

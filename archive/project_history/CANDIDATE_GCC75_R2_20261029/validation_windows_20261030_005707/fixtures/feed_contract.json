@@ -1,0 +1,77 @@
+{
+  "source": "SIMULATED",
+  "execution_context": "OFFLINE_TEST_ONLY",
+  "physical_pass": false,
+  "ack": {
+    "request_id": 1,
+    "state": "PENDING"
+  },
+  "after_disconnect": {
+    "request_id": 1,
+    "state": "PENDING"
+  },
+  "final": {
+    "request_id": 1,
+    "state": "SUCCESS"
+  },
+  "feeding_history": [
+    {
+      "kind": "FEED",
+      "timestamp": "2026-10-29T17:57:23.490284Z",
+      "request_id": 1,
+      "state": "SUCCESS",
+      "details": {}
+    },
+    {
+      "kind": "FEED",
+      "timestamp": "2026-10-29T17:57:23.476118Z",
+      "request_id": 1,
+      "state": "PENDING",
+      "details": {}
+    },
+    {
+      "kind": "FEED",
+      "timestamp": "2026-10-29T17:57:23.474615Z",
+      "request_id": 1,
+      "state": "REQUEST_RECEIVED",
+      "details": {
+        "client_key": "SYNTHETIC_MANUAL_35G"
+      }
+    }
+  ],
+  "drinking_history": [
+    {
+      "kind": "DRINKING",
+      "timestamp": "2026-10-29T17:57:23.496477Z",
+      "request_id": null,
+      "state": "SIMULATED_OBSERVATION",
+      "details": {
+        "source": "MOCK",
+        "simulated": true,
+        "volume_ml": null
+      }
+    }
+  ],
+  "feeding_sessions": [
+    {
+      "session_id": "feed-1",
+      "cat_identity": "UNKNOWN",
+      "food_type": null,
+      "requested_grams": null,
+      "dispensed_grams": null,
+      "weight_before_eating": null,
+      "weight_after_eating": null,
+      "estimated_consumed_grams": null,
+      "requested_at": "2026-10-29T17:57:23.474615Z",
+      "dispense_started_at": null,
+      "dispense_finished_at": null,
+      "eating_started_at": null,
+      "eating_finished_at": null,
+      "result": "SUCCESS",
+      "reject_reason": null,
+      "source": "MOCK",
+      "approach_delay_seconds": null,
+      "repeat_visits": null
+    }
+  ]
+}

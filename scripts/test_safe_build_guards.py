@@ -25,6 +25,24 @@ def main():
              (["-DM4_PINS_REVIEWED=2"], False),
              (["-DM4_BUTTON_PULL=3"], False)]
     cases.extend(([f"-DM4_DIAGNOSTIC_MODE={mode}", "-DFORR_HW_SAFE=1"], True) for mode in range(1, 7))
+    measured = ["-DFORR_BOARD_S3=1", "-DFORR_REAL_S3_NO_PSRAM=1", "-DFORR_HW_SAFE=1",
+                "-DFORR_NATIVE_USB=0", "-DARDUINO_USB_CDC_ON_BOOT=0"]
+    candidate = measured + ["-DM4_SENSOR_BRINGUP=1", "-DM4_DIAGNOSTIC_MODE=7"]
+    cases.extend([(measured, True), (candidate, True),
+                  (measured + ["-DBOARD_HAS_PSRAM"], False),
+                  (measured + ["-DBOARD_HAS_PSRAM=0"], False),
+                  (measured + ["-DFORR_ENABLE_PSRAM=1"], False),
+                  (measured + ["-DSIMULATED_SENSORS=1"], False),
+                  (["-DFORR_REAL_S3_NO_PSRAM=1"], False),
+                  (candidate + ["-DM4_SERVO_PWM=14"], False),
+                  (candidate + ["-DM4_PUMP_MOSFET=15"], False),
+                  (candidate + ["-DM4_RTC_DAT=19"], False),
+                  (candidate + ["-DM4_RTC_CLK=16"], False),
+                  (candidate + ["-DM4_HX711_DOUT=4"], False),
+                  (candidate + ["-DSERVO_DIAGNOSTIC_ENABLED=1"], False),
+                  (candidate + ["-DPUMP_DIAGNOSTIC_ENABLED=1"], False),
+                  (measured + ["-DM4_SENSOR_BRINGUP=1"], False),
+                  (measured + ["-DM4_SENSOR_BRINGUP=1", "-DM4_DIAGNOSTIC_MODE=8"], False)])
     command = [str(args.zig), "c++"] if args.zig else [str(args.compiler)]
     with tempfile.TemporaryDirectory(prefix="forr-cat-guard-") as work:
         source = Path(work) / "guard.cpp"

@@ -1,0 +1,20 @@
+from enum import Enum
+
+
+class ComponentState(str, Enum):
+    MOCK = "MOCK"
+    NOT_CONFIGURED = "NOT_CONFIGURED"
+    NOT_CONNECTED = "NOT_CONNECTED"
+    NOT_VALIDATED = "NOT_VALIDATED"
+    ONLINE = "ONLINE"
+    DEGRADED = "DEGRADED"
+    OFFLINE = "OFFLINE"
+    FAULT = "FAULT"
+
+
+class LinkState(str, Enum):
+    UNCONFIGURED = "UNCONFIGURED"
+    CONNECTING = "CONNECTING"
+    ONLINE = "ONLINE"
+    DEGRADED = "DEGRADED"
+    OFFLINE = "OFFLINE"

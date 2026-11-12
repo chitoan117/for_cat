@@ -382,551 +382,189 @@ std::vector<Detection> postprocess(
     return results;
 }
 
-int main()
-{
-    std::cout
-        << "=== FOR_CAT TensorRT C++ ==="
-        << std::endl;
+#include <stdexcept>
+#include "latency_runtime.h"
 
-    std::ifstream engineFile(
-        ENGINE_PATH,
-        std::ios::binary
-    );
+namespace {
+static_assert(ATOMIC_BOOL_LOCK_FREE == 2, "signal stop requires a lock-free atomic bool");
+std::atomic<bool> interrupted{false};
+void onSignal(int) { interrupted.store(true, std::memory_order_relaxed); }
 
-    if (!engineFile)
-    {
-        std::cerr
-            << "Khong mo duoc engine: "
-            << ENGINE_PATH
-            << std::endl;
-
-        return 1;
+template <class T> struct TrtDestroy {
+    void operator()(T* object) const { if (object) object->destroy(); }
+};
+struct GpuResources {
+    void* buffers[2]{nullptr, nullptr};
+    cudaStream_t stream = nullptr;
+    cudaEvent_t events[4]{nullptr, nullptr, nullptr, nullptr};
+    ~GpuResources() {
+        if (stream) cudaStreamSynchronize(stream);
+        for (auto event : events) if (event) cudaEventDestroy(event);
+        if (stream) cudaStreamDestroy(stream);
+        for (auto buffer : buffers) if (buffer) cudaFree(buffer);
     }
+};
+void checked(cudaError_t result, const char* operation) {
+    if (!cudaCheck(result, operation)) throw std::runtime_error(operation);
+}
 
-    engineFile.seekg(
-        0,
-        std::ios::end
-    );
-
-    size_t engineSize =
-        static_cast<size_t>(
-            engineFile.tellg()
-        );
-
-    engineFile.seekg(
-        0,
-        std::ios::beg
-    );
-
-    std::vector<char> engineData(
-        engineSize
-    );
-
-    engineFile.read(
-        engineData.data(),
-        engineSize
-    );
-
-    IRuntime* runtime =
-        createInferRuntime(gLogger);
-
-    if (!runtime)
-    {
-        std::cerr
-            << "Khong tao duoc TensorRT Runtime"
-            << std::endl;
-
-        return 1;
-    }
-
-    ICudaEngine* engine =
-        runtime->deserializeCudaEngine(
-            engineData.data(),
-            engineSize
-        );
-
-    if (!engine)
-    {
-        std::cerr
-            << "Khong deserialize duoc engine"
-            << std::endl;
-
-        runtime->destroy();
-        return 1;
-    }
-
-    IExecutionContext* context =
-        engine->createExecutionContext();
-
-    if (!context)
-    {
-        std::cerr
-            << "Khong tao duoc execution context"
-            << std::endl;
-
-        engine->destroy();
-        runtime->destroy();
-
-        return 1;
-    }
-
-    std::cout
-        << "Engine: OK"
-        << std::endl;
-
-    std::cout
-        << "Bindings: "
-        << engine->getNbBindings()
-        << std::endl;
-
-    for (int i = 0;
-         i < engine->getNbBindings();
-         ++i)
-    {
-        Dims dims =
-            engine->getBindingDimensions(i);
-
-        std::cout
-            << i
-            << " "
-            << (
-                engine->bindingIsInput(i)
-                ? "INPUT "
-                : "OUTPUT "
-            )
-            << engine->getBindingName(i)
-            << " shape=(";
-
-        for (int j = 0;
-             j < dims.nbDims;
-             ++j)
-        {
-            std::cout << dims.d[j];
-
-            if (j < dims.nbDims - 1)
-                std::cout << ",";
+int run(const latency::Options& options) {
+    using latency::Clock;
+    using latency::milliseconds;
+    std::ifstream file(options.engine, std::ios::binary | std::ios::ate);
+    if (!file || file.tellg() <= 0 || file.tellg() > 512 * 1024 * 1024)
+        throw std::runtime_error("engine missing/empty/oversized: " + options.engine);
+    const auto size = static_cast<std::size_t>(file.tellg());
+    std::vector<char> bytes(size);
+    file.seekg(0);
+    if (!file.read(bytes.data(), static_cast<std::streamsize>(size))) throw std::runtime_error("engine read failed");
+    std::unique_ptr<IRuntime, TrtDestroy<IRuntime>> runtime(createInferRuntime(gLogger));
+    if (!runtime) throw std::runtime_error("TensorRT runtime creation failed");
+    std::unique_ptr<ICudaEngine, TrtDestroy<ICudaEngine>> engine(runtime->deserializeCudaEngine(bytes.data(), size));
+    if (!engine) throw std::runtime_error("engine deserialization failed");
+    std::vector<latency::Binding> bindings;
+    for (int index = 0; index < engine->getNbBindings(); ++index) {
+        const auto dims = engine->getBindingDimensions(index);
+        std::cout << "Binding storage " << index << " format=" << engine->getBindingFormatDesc(index)
+                  << " vectorized_dim=" << engine->getBindingVectorizedDim(index) << '\n';
+        if (engine->getBindingFormat(index) != TensorFormat::kLINEAR || engine->getBindingVectorizedDim(index) != -1)
+            throw std::runtime_error("ENGINE_CONTRACT_MISMATCH: unvectorized linear I/O required");
+        latency::Binding binding{engine->bindingIsInput(index), engine->getBindingDataType(index) == DataType::kFLOAT, {}};
+        std::cout << "Binding " << index << ' ' << (binding.input ? "INPUT " : "OUTPUT ")
+                  << engine->getBindingName(index) << " dtype=" << static_cast<int>(engine->getBindingDataType(index)) << " shape=";
+        for (int dimension = 0; dimension < dims.nbDims; ++dimension) {
+            binding.dimensions.push_back(dims.d[dimension]);
+            std::cout << (dimension ? "x" : "") << dims.d[dimension];
         }
-
-        std::cout
-            << ")"
-            << std::endl;
+        std::cout << '\n';
+        bindings.push_back(binding);
     }
-
-    const size_t inputElements =
-        1 * 3 * INPUT_H * INPUT_W;
-
-    const size_t outputElements =
-        1 * 84 * 2100;
-
-    const size_t inputBytes =
-        inputElements * sizeof(float);
-
-    const size_t outputBytes =
-        outputElements * sizeof(float);
-
-    std::vector<float> hostInput(
-        inputElements
-    );
-
-    std::vector<float> hostOutput(
-        outputElements
-    );
-
-    void* deviceBuffers[2] =
-    {
-        nullptr,
-        nullptr
-    };
-
-    if (!cudaCheck(
-            cudaMalloc(
-                &deviceBuffers[0],
-                inputBytes
-            ),
-            "cudaMalloc input"))
-    {
-        return 1;
-    }
-
-    if (!cudaCheck(
-            cudaMalloc(
-                &deviceBuffers[1],
-                outputBytes
-            ),
-            "cudaMalloc output"))
-    {
-        cudaFree(deviceBuffers[0]);
-        return 1;
-    }
-
-    cudaStream_t stream;
-
-    if (!cudaCheck(
-            cudaStreamCreate(&stream),
-            "cudaStreamCreate"))
-    {
-        cudaFree(deviceBuffers[0]);
-        cudaFree(deviceBuffers[1]);
-
-        return 1;
-    }
-
-    cv::VideoCapture cap(
-        0,
-        cv::CAP_V4L2
-    );
-
-    cap.set(
-        cv::CAP_PROP_FOURCC,
-        cv::VideoWriter::fourcc(
-            'M',
-            'J',
-            'P',
-            'G'
-        )
-    );
-
-    cap.set(
-        cv::CAP_PROP_FRAME_WIDTH,
-        640
-    );
-
-    cap.set(
-        cv::CAP_PROP_FRAME_HEIGHT,
-        480
-    );
-
-    cap.set(
-        cv::CAP_PROP_FPS,
-        30
-    );
-
-    if (!cap.isOpened())
-    {
-        std::cerr
-            << "Khong mo duoc /dev/video0"
-            << std::endl;
-
-        cudaStreamDestroy(stream);
-        cudaFree(deviceBuffers[0]);
-        cudaFree(deviceBuffers[1]);
-
-        context->destroy();
-        engine->destroy();
-        runtime->destroy();
-
-        return 1;
-    }
-
-    std::cout
-        << "Camera: OK"
-        << std::endl;
-
-    std::cout
-        << "Chi loc CAT / DOG"
-        << std::endl;
-
-    bool hasDisplay =
-        std::getenv("DISPLAY") != nullptr;
-
-    if (hasDisplay)
-    {
-        std::cout
-            << "GUI: ON"
-            << std::endl;
-    }
-    else
-    {
-        std::cout
-            << "GUI: OFF - SSH headless"
-            << std::endl;
-
-        std::cout
-            << "Anh moi nhat: "
-            << "/home/toan/for_cat/latest.jpg"
-            << std::endl;
-    }
-
-    cv::Mat frame;
-
-    double smoothFps = 0.0;
-
-    auto lastLog =
-        std::chrono::steady_clock::now();
-
-    auto lastSave =
-        std::chrono::steady_clock::now();
-
-    while (true)
-    {
-        auto frameStart =
-            std::chrono::steady_clock::now();
-
-        if (!cap.read(frame))
-        {
-            std::cerr
-                << "Khong doc duoc frame"
-                << std::endl;
-
+    const auto contract = latency::binding_error(bindings, engine->hasImplicitBatchDimension());
+    if (!contract.empty()) throw std::runtime_error("ENGINE_CONTRACT_MISMATCH: " + contract);
+    std::cout << "ENGINE_CONTRACT=PASS; COCO CAT=15 DOG=16; monitoring only; no actuator path\n";
+    std::unique_ptr<IExecutionContext, TrtDestroy<IExecutionContext>> context(engine->createExecutionContext());
+    if (!context) throw std::runtime_error("execution context creation failed");
+    constexpr std::size_t input_count = 1 * 3 * INPUT_H * INPUT_W;
+    constexpr std::size_t output_count = 1 * 84 * 2100;
+    std::vector<float> input(input_count), output(output_count);
+    GpuResources gpu;
+    checked(cudaMalloc(&gpu.buffers[0], input_count * sizeof(float)), "allocate input");
+    checked(cudaMalloc(&gpu.buffers[1], output_count * sizeof(float)), "allocate output");
+    checked(cudaStreamCreate(&gpu.stream), "create stream");
+    for (auto& event : gpu.events) checked(cudaEventCreate(&event), "create event");
+    // Created after GPU objects so capture joins before context/buffers are destroyed.
+    latency::Capture capture(options.latest);
+    capture.open(options);
+    std::cout << "GUI=" << options.gui << " SNAPSHOT=" << (!options.gui && options.snapshot)
+              << " WARMUP_FRAMES=" << options.warmup
+              << " FRAME_AGE=app-read-complete-to-output-complete; not exposure latency\n";
+    latency::Statistics statistics;
+    std::uint64_t processed = 0, sequence = 0;
+    unsigned sequential_failures = 0;
+    double last_driver_timestamp = 0;
+    const auto startup = Clock::now();
+    auto measured_start = startup, last_report = startup, last_save = startup;
+    bool measuring = options.warmup == 0;
+    while (!interrupted.load(std::memory_order_relaxed)) {
+        const auto now = Clock::now();
+        if (options.seconds > 0 && measuring && milliseconds(measured_start, now) >= options.seconds * 1000) break;
+        if (!measuring && milliseconds(startup, now) > 30000) throw std::runtime_error("warmup deadline exceeded");
+        latency::Packet<cv::Mat> packet;
+        if (!capture.take(packet)) {
+            if (capture.failed() || (!options.latest && ++sequential_failures >= 3)) throw std::runtime_error("camera read failure budget exhausted");
+            if (!options.latest) std::this_thread::sleep_for(std::chrono::milliseconds(50));
             continue;
         }
-
+        sequential_failures = 0;
+        if (packet.sequence <= sequence) throw std::runtime_error("non-increasing frame sequence");
+        sequence = packet.sequence;
+        if (processed == 0) std::cout << std::fixed << std::setprecision(3) << "DRIVER_TIMESTAMP_ms=" << packet.driver_ms
+            << " HOST_MONOTONIC_ms=" << std::chrono::duration<double, std::milli>(Clock::now().time_since_epoch()).count() << '\n';
+        cv::Mat frame = std::move(packet.image);
+        latency::Metrics metrics;
+        metrics.queue = milliseconds(packet.received, Clock::now());
+        metrics.read = packet.read_ms;
         LetterboxInfo info;
-
-        preprocess(
-            frame,
-            hostInput.data(),
-            info
-        );
-
-        if (!cudaCheck(
-                cudaMemcpyAsync(
-                    deviceBuffers[0],
-                    hostInput.data(),
-                    inputBytes,
-                    cudaMemcpyHostToDevice,
-                    stream
-                ),
-                "H2D"))
-        {
-            break;
-        }
-
-        bool inferenceOK =
-            context->enqueueV2(
-                deviceBuffers,
-                stream,
-                nullptr
-            );
-
-        if (!inferenceOK)
-        {
-            std::cerr
-                << "TensorRT inference failed"
-                << std::endl;
-
-            break;
-        }
-
-        if (!cudaCheck(
-                cudaMemcpyAsync(
-                    hostOutput.data(),
-                    deviceBuffers[1],
-                    outputBytes,
-                    cudaMemcpyDeviceToHost,
-                    stream
-                ),
-                "D2H"))
-        {
-            break;
-        }
-
-        if (!cudaCheck(
-                cudaStreamSynchronize(stream),
-                "cudaStreamSynchronize"))
-        {
-            break;
-        }
-
-        std::vector<Detection> detections =
-            postprocess(
-                hostOutput.data(),
-                frame.size(),
-                info
-            );
-
-        for (const Detection& d :
-             detections)
-        {
-            std::string label;
-
-            if (d.classId == CAT_ID)
-            {
-                label = "CAT";
-            }
-            else
-            {
-                label = "DOG";
-            }
-
+        const auto pre_start = Clock::now();
+        preprocess(frame, input.data(), info);
+        metrics.pre = milliseconds(pre_start, Clock::now());
+        const auto ai_start = Clock::now();
+        checked(cudaEventRecord(gpu.events[0], gpu.stream), "event H2D begin");
+        checked(cudaMemcpyAsync(gpu.buffers[0], input.data(), input_count * sizeof(float), cudaMemcpyHostToDevice, gpu.stream), "H2D");
+        checked(cudaEventRecord(gpu.events[1], gpu.stream), "event H2D end");
+        const auto enqueue_start = Clock::now();
+        if (!context->enqueueV2(gpu.buffers, gpu.stream, nullptr)) throw std::runtime_error("TensorRT enqueue failed");
+        metrics.enqueue = milliseconds(enqueue_start, Clock::now());
+        checked(cudaEventRecord(gpu.events[2], gpu.stream), "event TRT end");
+        checked(cudaMemcpyAsync(output.data(), gpu.buffers[1], output_count * sizeof(float), cudaMemcpyDeviceToHost, gpu.stream), "D2H");
+        checked(cudaEventRecord(gpu.events[3], gpu.stream), "event D2H end");
+        const auto sync_start = Clock::now();
+        checked(cudaStreamSynchronize(gpu.stream), "inference synchronize");
+        metrics.sync = milliseconds(sync_start, Clock::now());
+        metrics.ai = milliseconds(ai_start, Clock::now());
+        float h2d = 0, trt = 0, d2h = 0;
+        checked(cudaEventElapsedTime(&h2d, gpu.events[0], gpu.events[1]), "time H2D");
+        checked(cudaEventElapsedTime(&trt, gpu.events[1], gpu.events[2]), "time TRT");
+        checked(cudaEventElapsedTime(&d2h, gpu.events[2], gpu.events[3]), "time D2H");
+        metrics.h2d = h2d; metrics.trt = trt; metrics.d2h = d2h;
+        const auto post_start = Clock::now();
+        const auto detections = postprocess(output.data(), frame.size(), info);
+        for (const auto& detection : detections) {
             char text[64];
-
-            std::snprintf(
-                text,
-                sizeof(text),
-                "%s %.2f",
-                label.c_str(),
-                d.confidence
-            );
-
-            cv::rectangle(
-                frame,
-                d.box,
-                cv::Scalar(
-                    0,
-                    255,
-                    0
-                ),
-                2
-            );
-
-            int textY =
-                std::max(
-                    20,
-                    d.box.y - 8
-                );
-
-            cv::putText(
-                frame,
-                text,
-                cv::Point(
-                    d.box.x,
-                    textY
-                ),
-                cv::FONT_HERSHEY_SIMPLEX,
-                0.7,
-                cv::Scalar(
-                    0,
-                    255,
-                    0
-                ),
-                2
-            );
+            std::snprintf(text, sizeof(text), "%s %.2f", detection.classId == CAT_ID ? "CAT" : "DOG", detection.confidence);
+            cv::rectangle(frame, detection.box, cv::Scalar(0,255,0), 2);
+            cv::putText(frame, text, cv::Point(detection.box.x, std::max(20, detection.box.y-8)),
+                        cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0,255,0), 2);
         }
-
-        auto frameEnd =
-            std::chrono::steady_clock::now();
-
-        double elapsed =
-            std::chrono::duration<double>(
-                frameEnd - frameStart
-            ).count();
-
-        double fps =
-            elapsed > 0.0
-            ? 1.0 / elapsed
-            : 0.0;
-
-        if (smoothFps == 0.0)
-        {
-            smoothFps = fps;
+        metrics.post = milliseconds(post_start, Clock::now());
+        bool quit = false;
+        if (options.gui) {
+            const auto begin = Clock::now();
+            cv::imshow("FOR_CAT TensorRT", frame);
+            quit = (cv::waitKey(1) & 0xff) == 'q';
+            metrics.display = milliseconds(begin, Clock::now());
+        } else if (options.snapshot && milliseconds(last_save, Clock::now()) >= 1000) {
+            const auto begin = Clock::now();
+            if (!cv::imwrite(options.snapshot_path, frame)) throw std::runtime_error("snapshot write failed");
+            last_save = Clock::now();
+            metrics.snapshot = milliseconds(begin, last_save);
+            metrics.snapshot_written = true;
         }
-        else
-        {
-            smoothFps =
-                smoothFps * 0.9 +
-                fps * 0.1;
+        metrics.age = milliseconds(packet.received, Clock::now());
+        const double driver_age = std::chrono::duration<double, std::milli>(Clock::now().time_since_epoch()).count() - packet.driver_ms;
+        if (std::isfinite(packet.driver_ms) && packet.driver_ms > last_driver_timestamp && driver_age >= 0 && driver_age < 60000) {
+            metrics.driver_age = driver_age;
+            last_driver_timestamp = packet.driver_ms;
         }
-
-        char fpsText[64];
-
-        std::snprintf(
-            fpsText,
-            sizeof(fpsText),
-            "FPS %.1f",
-            smoothFps
-        );
-
-        cv::putText(
-            frame,
-            fpsText,
-            cv::Point(10, 30),
-            cv::FONT_HERSHEY_SIMPLEX,
-            0.7,
-            cv::Scalar(
-                255,
-                255,
-                255
-            ),
-            2
-        );
-
-        auto now =
-            std::chrono::steady_clock::now();
-
-        double logElapsed =
-            std::chrono::duration<double>(
-                now - lastLog
-            ).count();
-
-        if (logElapsed >= 1.0)
-        {
-            if (detections.empty())
-            {
-                std::cout
-                    << "NONE | FPS "
-                    << smoothFps
-                    << std::endl;
-            }
-            else
-            {
-                for (const Detection& d :
-                     detections)
-                {
-                    std::cout
-                        << (
-                            d.classId == CAT_ID
-                            ? "CAT "
-                            : "DOG "
-                        )
-                        << d.confidence
-                        << " ";
-                }
-
-                std::cout
-                    << "| FPS "
-                    << smoothFps
-                    << std::endl;
-            }
-
-            lastLog = now;
+        ++processed;
+        if (measuring) statistics.add(metrics);
+        else if (processed >= static_cast<std::uint64_t>(options.warmup)) {
+            measuring = true;
+            measured_start = last_report = Clock::now();
         }
-
-        if (hasDisplay)
-        {
-            cv::imshow(
-                "FOR_CAT TensorRT",
-                frame
-            );
-
-            int key =
-                cv::waitKey(1) & 0xFF;
-
-            if (key == 'q')
-                break;
+        if (measuring && milliseconds(last_report, Clock::now()) >= 1000) {
+            std::cout << (detections.empty() ? "NONE" : "DETECTIONS");
+            for (const auto& detection : detections) std::cout << ' ' << (detection.classId == CAT_ID ? "CAT" : "DOG") << '=' << detection.confidence;
+            statistics.print("", options, milliseconds(measured_start, Clock::now())/1000,
+                             capture.counts(), processed, sequence, capture.failures());
+            last_report = Clock::now();
         }
-        else
-        {
-            double saveElapsed =
-                std::chrono::duration<double>(
-                    now - lastSave
-                ).count();
-
-            if (saveElapsed >= 1.0)
-            {
-                cv::imwrite(
-                    "/home/toan/for_cat/latest.jpg",
-                    frame
-                );
-
-                lastSave = now;
-            }
-        }
+        if (quit) break;
     }
+    const double elapsed = milliseconds(measured_start, Clock::now()) / 1000;
+    const auto stopping = Clock::now();
+    capture.stop();
+    if (options.gui) cv::destroyAllWindows();
+    statistics.print("SUMMARY", options, elapsed, capture.counts(), processed, sequence, capture.failures());
+    std::cout << "CAPTURE_APP_FPS=" << static_cast<double>(capture.counts().captured)/(milliseconds(startup, Clock::now())/1000) << '\n';
+    std::cout << "SHUTDOWN_ms=" << milliseconds(stopping, Clock::now()) << '\n';
+    return statistics.frames ? 0 : 2;
+}
+}
 
-    cap.release();
-
-    if (hasDisplay)
-        cv::destroyAllWindows();
-
-    cudaStreamDestroy(stream);
-
-    cudaFree(deviceBuffers[0]);
-    cudaFree(deviceBuffers[1]);
-
-    context->destroy();
-    engine->destroy();
-    runtime->destroy();
-
-    return 0;
+int main(int argc, char** argv) {
+    std::signal(SIGINT, onSignal);
+    std::signal(SIGTERM, onSignal);
+    try { return run(latency::options(argc, argv)); }
+    catch (const std::exception& error) { std::cerr << "FOR_CAT_ERROR: " << error.what() << '\n'; return 1; }
 }

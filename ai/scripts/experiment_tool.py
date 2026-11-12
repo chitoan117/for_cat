@@ -10,7 +10,7 @@ def main():
     p.add_argument("action",choices=("candidates","prepare","register","archive"))
     p.add_argument("--config",type=Path); p.add_argument("--release",type=Path)
     p.add_argument("--output",type=Path); p.add_argument("--artifact-root",type=Path)
-    p.add_argument("--expected-task",choices=("detector","identity","behavior"))
+    p.add_argument("--expected-task",choices=("detector","identity","behavior","behavior_v2"))
     p.add_argument("--metrics",type=Path); p.add_argument("--evaluation",type=Path); p.add_argument("--artifact-name")
     p.add_argument("--apply",action="store_true")
     a=p.parse_args()

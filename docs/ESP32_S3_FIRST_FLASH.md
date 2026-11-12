@@ -1,5 +1,7 @@
 # First flash — bridge-first HW_SAFE only (NOT HARDWARE VERIFIED)
 
+> Current measured board uses `esp32s3_16mb_no_psram_hw_safe_uart`, NOT N16R8 surrogate. Actual flash16MB/PSRAM NOT DETECTED overrides seller claim; Jetson flash needs esptool3.3.3 --no-stub. Use `WINDOWS_BUILD_JETSON_FLASH.md` / `REAL_HARDWARE_NEXT_STEPS.md`. Original commands below are historical surrogate procedure; no new GPIO/actuator permission.
+
 Prerequisite: exact module/board/USB routing identified, power reviewed, N16R8 compile options checked against the physical part. If identity or routing is unclear, stop—do not flash based only on a seller title. Run PC commands from the **project root**; replace COMx with observed COM. All commands below are future manual commands; none uploads hardware in this pack.
 
 1. **No sensors connected.**

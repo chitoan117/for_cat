@@ -1,0 +1,29 @@
+[Unit]
+Description=ForCat existing REST backend with read-only ESP32 state
+After=for-cat-esp32-bridge.service
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+WorkingDirectory=%h/for_cat/jetson
+Environment=ESP32_BRIDGE_ENABLED=1
+Environment=SYSTEM_STATE_PROVIDER=REAL
+Environment=ESP32_TRANSPORT=MOCK
+Environment=CAMERA_PROVIDER=MOCK
+Environment=AI_RUNTIME=MOCK
+Environment=AI_SHADOW_MODE=true
+Environment=API_HOST=0.0.0.0
+Environment=API_PORT=8000
+Environment=DATABASE_PATH=%h/for_cat/jetson/data/events.db
+Environment=EVENT_RETENTION=100000
+Environment=PYTHONUNBUFFERED=1
+ExecStart=%h/for_cat/.venv/jetson-integration/bin/python -m tools.run_api
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=10
+NoNewPrivileges=true
+UMask=0077
+
+[Install]
+WantedBy=default.target

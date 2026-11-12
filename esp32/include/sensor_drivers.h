@@ -61,7 +61,8 @@ class FreshnessCheckedSensor final : public Sensor<T> {
 using Hx711Grams = Sensor<float>;
 using FoodUltrasonicPercent = Sensor<float>;
 using WaterUltrasonicPercent = Sensor<float>;
-using Ds3231EpochSeconds = Sensor<uint64_t>;
+using RtcEpochSeconds = Sensor<uint64_t>;
+using Ds3231EpochSeconds = RtcEpochSeconds; // legacy source compatibility
 
 // Debounced button input; true once per stable press (requires explicit release).
 class ButtonDebouncer {

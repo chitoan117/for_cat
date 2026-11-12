@@ -5,7 +5,7 @@
 | Interface | Check before connection | Required plan |
 | --- | --- | --- |
 | HX711 digital logic | exact breakout VDD/VSUP/regulator and DOUT voltage; SCK VIH | use compatible digital rail or verified level translation; load-cell excitation is not automatically digital VDD |
-| DS3231 breakout | SDA/SCL pull-up rail, battery type and any charging circuit | I2C pull-ups at 3.3 V toward ESP32; shift if module forces 5 V; never fit an unsuitable cell to a charging board |
+| DS1302 currentRTC |VCC/CLK/DAT/CE modulelabels,battery/main-supply/logic |3.3Vmain/logic,commonGND,CLK16/DAT17bidirectional/CE18;powerOFFrewire;nochargerregisterwrites;notI2C |
 | SSD1306 module | actual controller/regulator, I2C address/pull-ups | 3.3 V bus; don't infer logic tolerance from module VCC range |
 | HC-SR04 ECHO | module variant, powered ECHO peak/high level | suitable divider/buffer/level shifter to ≤3.3 V; verify waveform and ESP32 limits |
 | JSN-SR04T ECHO | board revision/interface mode and ECHO high level | same protection, no direct 5 V ECHO connection; verify TRIG VIH too |

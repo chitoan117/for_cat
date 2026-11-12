@@ -16,9 +16,10 @@ if __name__ == "__main__":
     parser.add_argument("--patience", type=int, default=5)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--apply", action="store_true")
+    parser.add_argument("--near-review", type=Path)
     args = parser.parse_args()
     try:
-        result = prepare(args.task, args.dataset, args.seed, args.patience)
+        result = prepare(args.task, args.dataset, args.seed, args.patience, near_review=args.near_review)
     except ValueError as exc:
         parser.exit(2, f"TRAINING_PLAN_INVALID: {exc}\n")
     if args.apply and result["status"] == "READY_FOR_FUTURE_TRAINER":

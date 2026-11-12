@@ -1,0 +1,10 @@
+* -text
+*.engine binary
+*.onnx binary
+*.pt binary
+*.bin binary
+*.wasm binary
+*.png binary
+*.jpg binary
+*.ttf binary
+*.woff2 binary

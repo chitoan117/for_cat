@@ -11,6 +11,7 @@
 #if M4_DIAGNOSTIC_MODE && (!defined(FORR_HW_SAFE) || defined(SIMULATED_SENSORS))
 #error "Real-driver diagnostics must be explicitly selected HW_SAFE, never SIM"
 #endif
+#include "candidate_sensor_pins.h"
 #ifndef M4_PINS_REVIEWED
 #define M4_PINS_REVIEWED 0
 #endif
@@ -40,6 +41,15 @@
 #endif
 #ifndef M4_BUTTON_PIN
 #define M4_BUTTON_PIN -1
+#endif
+#ifndef M4_RTC_CLK
+#define M4_RTC_CLK -1
+#endif
+#ifndef M4_RTC_DAT
+#define M4_RTC_DAT -1
+#endif
+#ifndef M4_RTC_CE
+#define M4_RTC_CE -1
 #endif
 #ifndef M4_BUTTON_ACTIVE_LOW
 #define M4_BUTTON_ACTIVE_LOW 1

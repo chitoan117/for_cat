@@ -372,7 +372,9 @@ void releaseProperties() {
   CHECK(fill.pumpRequested()); water.sampled_at_ms+=2001; water.water_percent.fresh=false;
   m4::tickShadowWater(fill,water); CHECK(!fill.pumpRequested() && fill.reason()==safety::WaterReason::SENSOR_FAULT);
 }
+#include "ds1302_tests.h"
 int main() {
   hx711(); calibration(); rtc(); ultrasonic(); accessories(); snapshotsAndDisplay(); failSafeIntegration(); releaseProperties();
+  ds1302Regression();
   std::printf("Native M4 drivers: %u assertions PASS (fake I/O; hardware NOT verified)\n",checks);
 }

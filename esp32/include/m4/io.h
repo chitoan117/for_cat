@@ -13,7 +13,7 @@ class PinIO {
   virtual void output(int pin) = 0;
   virtual bool read(int pin) = 0;
   virtual void write(int pin, bool high) = 0;
-  virtual void pauseMicros(uint32_t short_us) = 0; // only HX711 1–2 us pulses, never waiting for readiness
+  virtual void pauseMicros(uint32_t short_us) = 0; // bounded HX711/DS1302 pulse timing, never readiness waits
   virtual void enterCritical() = 0;
   virtual void exitCritical() = 0;
 };

@@ -11,7 +11,7 @@ SELECTED means architectural role selected, not purchased/tested. CANDIDATE mean
 | HX711 | Load-cell ADC | CANDIDATE | Module supply/logic/gain/readiness |
 | HC-SR04 | Candidate food distance | CANDIDATE | Actual range/ECHO voltage/mount |
 | JSN-SR04T | Candidate water distance | CANDIDATE | Variant, minimum range/wet-surface behavior |
-| DS3231 | RTC | CANDIDATE | Module/battery/pull-up voltage/retention |
+| DS1302 (user-owned current selection) |RTC3-wire |SELECTED, physicalNOTVERIFIED |CLK16/DAT17/CE18,3.3V/modulelabels/battery/CH/WP/retention |
 | SSD1306 | Minimal status panel | CANDIDATE | Address/height/interface/supply |
 | Buzzer | Status patterns | CANDIDATE | Active vs passive, current/driver |
 | Manual button | Feed intent | CANDIDATE | Polarity/pull/wiring/debounce |

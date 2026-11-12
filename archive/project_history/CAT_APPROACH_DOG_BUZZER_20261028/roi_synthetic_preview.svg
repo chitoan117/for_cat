@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1020" viewBox="0 0 1280 1020">
+<rect width="1280" height="1020" fill="#14202b"/>
+<text x="25" y="35" fill="white" font-size="23">SYNTHETIC ROI SIMULATION — NOT A JETSON CAMERA RESULT</text>
+<g transform="translate(25,65)"><rect width="600" height="220" rx="8" fill="#243746"/>
+<text x="12" y="24" fill="white" font-size="16">CAT_IN | ROI_ENABLED</text><text x="12" y="46" fill="#cde2f5" font-size="14">IN_ROI | classification=CAT</text>
+<g transform="translate(20,60)"><rect width="560" height="145" fill="#15242e" stroke="#708da0"/>
+<rect x="140" y="36.25" width="280" height="72.5" fill="#b89a1b" fill-opacity=".13" stroke="#ffce38" stroke-width="2"/>
+<rect x="196.0" y="50.75" width="168.00000000000003" height="43.50000000000001" fill="none" stroke="#6ee790" stroke-width="3"/>
+</g></g>
+<g transform="translate(650,65)"><rect width="600" height="220" rx="8" fill="#243746"/>
+<text x="12" y="24" fill="white" font-size="16">CAT_OUT | ROI_ENABLED</text><text x="12" y="46" fill="#cde2f5" font-size="14">OUTSIDE_ROI | classification=NONE</text>
+<g transform="translate(20,60)"><rect width="560" height="145" fill="#15242e" stroke="#708da0"/>
+<rect x="140" y="36.25" width="280" height="72.5" fill="#b89a1b" fill-opacity=".13" stroke="#ffce38" stroke-width="2"/>
+<rect x="11.200000000000001" y="2.9" width="89.60000000000001" height="23.2" fill="none" stroke="#6ee790" stroke-width="3"/>
+</g></g>
+<g transform="translate(25,300)"><rect width="600" height="220" rx="8" fill="#243746"/>
+<text x="12" y="24" fill="white" font-size="16">DOG_IN | ROI_ENABLED</text><text x="12" y="46" fill="#cde2f5" font-size="14">IN_ROI | classification=DOG</text>
+<g transform="translate(20,60)"><rect width="560" height="145" fill="#15242e" stroke="#708da0"/>
+<rect x="140" y="36.25" width="280" height="72.5" fill="#b89a1b" fill-opacity=".13" stroke="#ffce38" stroke-width="2"/>
+<rect x="196.0" y="50.75" width="168.00000000000003" height="43.50000000000001" fill="none" stroke="#ff7474" stroke-width="3"/>
+</g></g>
+<g transform="translate(650,300)"><rect width="600" height="220" rx="8" fill="#243746"/>
+<text x="12" y="24" fill="white" font-size="16">DOG_OUT | ROI_ENABLED</text><text x="12" y="46" fill="#cde2f5" font-size="14">OUTSIDE_ROI | classification=NONE</text>
+<g transform="translate(20,60)"><rect width="560" height="145" fill="#15242e" stroke="#708da0"/>
+<rect x="140" y="36.25" width="280" height="72.5" fill="#b89a1b" fill-opacity=".13" stroke="#ffce38" stroke-width="2"/>
+<rect x="11.200000000000001" y="2.9" width="89.60000000000001" height="23.2" fill="none" stroke="#ff7474" stroke-width="3"/>
+</g></g>
+<g transform="translate(25,535)"><rect width="600" height="220" rx="8" fill="#243746"/>
+<text x="12" y="24" fill="white" font-size="16">MIXED | ROI_ENABLED</text><text x="12" y="46" fill="#cde2f5" font-size="14">IN_ROI | classification=DOG</text>
+<g transform="translate(20,60)"><rect width="560" height="145" fill="#15242e" stroke="#708da0"/>
+<rect x="140" y="36.25" width="280" height="72.5" fill="#b89a1b" fill-opacity=".13" stroke="#ffce38" stroke-width="2"/>
+<rect x="196.0" y="50.75" width="168.00000000000003" height="43.50000000000001" fill="none" stroke="#6ee790" stroke-width="3"/>
+<rect x="201.0" y="55.75" width="158.00000000000003" height="33.50000000000001" fill="none" stroke="#ff7474" stroke-width="3"/>
+</g></g>
+<g transform="translate(650,535)"><rect width="600" height="220" rx="8" fill="#243746"/>
+<text x="12" y="24" fill="white" font-size="16">EDGE_TOUCH | ROI_ENABLED</text><text x="12" y="46" fill="#cde2f5" font-size="14">OUTSIDE_ROI | classification=NONE</text>
+<g transform="translate(20,60)"><rect width="560" height="145" fill="#15242e" stroke="#708da0"/>
+<rect x="140" y="36.25" width="280" height="72.5" fill="#b89a1b" fill-opacity=".13" stroke="#ffce38" stroke-width="2"/>
+<rect x="56.0" y="50.75" width="84.0" height="43.50000000000001" fill="none" stroke="#6ee790" stroke-width="3"/>
+</g></g>
+<g transform="translate(25,770)"><rect width="600" height="220" rx="8" fill="#243746"/>
+<text x="12" y="24" fill="white" font-size="16">FULL_FRAME | FULL_FRAME</text><text x="12" y="46" fill="#cde2f5" font-size="14">NOT_EVALUATED_FULL_FRAME | classification=CAT</text>
+<g transform="translate(20,60)"><rect width="560" height="145" fill="#15242e" stroke="#708da0"/>
+<rect x="196.0" y="50.75" width="168.00000000000003" height="43.50000000000001" fill="none" stroke="#6ee790" stroke-width="3"/>
+</g></g>
+<g transform="translate(650,770)"><rect width="600" height="220" rx="8" fill="#243746"/>
+<text x="12" y="24" fill="white" font-size="16">UNCONFIGURED_ENABLED | ROI_ENABLED</text><text x="12" y="46" fill="#cde2f5" font-size="14">BLOCKED | classification=UNKNOWN</text>
+<g transform="translate(20,60)"><rect width="560" height="145" fill="#15242e" stroke="#708da0"/>
+</g></g>
+<text x="25" y="1010" fill="#cde2f5" font-size="15">Yellow: reviewed test ROI. Green: CAT bbox. Red: DOG bbox. All coordinates/detections are synthetic fixtures.</text></svg>

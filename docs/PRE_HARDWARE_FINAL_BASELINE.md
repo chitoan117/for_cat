@@ -1,4 +1,6 @@
-# CURRENT final pre-hardware baseline — verified handoff
+# HISTORICAL final pre-hardware baseline — verified host handoff
+
+Current hardware continuation: `CURRENT_PROJECT_STATE.md` / `M3_PHYSICAL_VALIDATION_RECORD.md` / `REAL_HARDWARE_NEXT_STEPS.md`. This file preserves the exact earlier host301/3271/18/11 checkpoint; actual adaptation totals are `REAL_HARDWARE_ADAPTATION_RESULT.md`. Do not treat earlier NOT VERIFIED as proof that subsequently reported hardware observations do not exist, or convert host results into those observations.
 
 **Milestone M2 — PRE-HARDWARE SOFTWARE CANDIDATE.** Authorized deep quality/failure-injection pass actually ran `scripts/run_checks.ps1`, returned success at runner timestamp `2026-10-05T08:47:23.028710+00:00`, status `PASSED_HOST_CHECKS`; subsequent strict/static/API/source audit passed. This is observed host time, not a sensor/cat session. Earlier documentation handoff at05:45:18.539625 had217/1328; quality starting run at05:55:03.083603 confirmed those counts. The current301/3271 reflect justified risk tests and evidenced corrections, not forced numbers or product features. UART v1 format/vectors, actuator gates, frontend and milestone remain unchanged.
 

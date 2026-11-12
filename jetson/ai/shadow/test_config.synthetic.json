@@ -1,0 +1,15 @@
+{
+  "schema_version": 2,
+  "status": "SYNTHETIC_TEST_ONLY",
+  "coordinate_system": "normalized_original_camera_frame",
+  "food_bowl_color": "RED",
+  "water_bowl_color": "BLUE",
+  "approach_reference": "BLUE_FLOOR_LINE",
+  "food_roi": {"x1": 0.1, "y1": 0.1, "x2": 0.35, "y2": 0.4},
+  "water_roi": {"x1": 0.65, "y1": 0.1, "x2": 0.9, "y2": 0.4},
+  "approach_line": null,
+  "tracker": {"min_confidence": 0.5, "min_iou": 0.15, "max_centroid_distance": 0.15, "ttl_ms": 1500, "history_capacity": 32},
+  "geometry": {"near_distance": 0.03, "exit_distance": 0.06, "min_body_overlap": 0.2, "min_motion_per_second": 0.02, "motion_window_ms": 1000},
+  "temporal": {"confirm_ms": 1000, "dropout_ms": 800, "min_state_ms": 1000, "max_observation_gap_ms": 500, "max_behavior_age_ms": 250, "min_behavior_confidence": 0.7},
+  "notes": "INVENTED TEST GEOMETRY ONLY. Not coordinates for a camera deployment. Requires explicit synthetic opt-in."
+}

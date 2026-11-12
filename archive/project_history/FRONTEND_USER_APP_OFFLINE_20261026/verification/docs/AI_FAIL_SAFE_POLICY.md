@@ -1,0 +1,7 @@
+# AI fail-safe policy — monitoring, never automatic feeding by default
+
+AI unavailable/unconfigured → observation readiness false/degraded; liveness can remain OK. Camera unavailable → no new positive evidence, paced retries, then service FAULTED; no rapid restart or feed intent. Identity UNKNOWN or ambiguous/multiple cats → no identity-dependent action. Behavior UNKNOWN/absent/low-confidence or outside ROI → no new stable behavior session. Brief dropout follows temporal tolerance; a long unobserved interval ends at the last positive observation rather than counting imaginary eating.
+
+`AI_SHADOW_MODE=true` defaults in config and `/status.ai`; predictions may create monitoring history only. There is no AI-to-feed authorisation call in the pipeline even if a future operator changes that flag. A new explicit validated feeding policy would require separate review/tests and ESP32 final safety; identity recognition alone is insufficient. Current physical SERIAL manual feeds also remain blocked for hardware safety.
+
+Model exceptions are rate-limited and reported DEGRADED; sustained camera/model/storage failures fault the explicitly started service. One completed visit can be retained for storage retry, never a frame backlog. Manual command idempotency and UART ACK/PENDING/final-result semantics remain separate from AI shadow history. No cat hunger/emotion or certain food liking is inferred.

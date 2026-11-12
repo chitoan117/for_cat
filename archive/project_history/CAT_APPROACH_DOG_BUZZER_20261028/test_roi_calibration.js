@@ -1,0 +1,14 @@
+"use strict";
+const assert = require("assert"), api = require("./roi_calibration_math.js");
+assert.deepStrictEqual(api.normalizedRect(640,480,160,120,480,360),{x1:.25,y1:.25,x2:.75,y2:.75});
+assert.deepStrictEqual(api.normalizedRect(1280,960,320,240,960,720),{x1:.25,y1:.25,x2:.75,y2:.75});
+for(const args of [[0,480,1,1,2,2],[640,480,-1,0,300,200],[640,480,100,100,100,200],[640,480,0,0,641,480],[640,480,0,0,NaN,10]]) assert.throws(()=>api.normalizedRect(...args));
+const full=api.configuration("FULL_FRAME",null,null,false,"","");
+assert.strictEqual(full.enabled,false);assert.strictEqual(full.calibrated,false);assert.strictEqual(full.x1,null);
+assert.throws(()=>api.configuration("ROI_ENABLED",null,null,false,"",""));
+assert.throws(()=>api.configuration("ROI_ENABLED",{width:640,height:480},{left:160,top:120,right:480,bottom:360},false,"REVIEW",""));
+const enabled=api.configuration("ROI_ENABLED",{width:640,height:480},{left:160,top:120,right:480,bottom:360},true,"REAL_IMAGE_REVIEW","/dev/video0");
+assert.strictEqual(enabled.enabled,true);assert.strictEqual(enabled.calibrated,true);assert.strictEqual(enabled.x1,.25);
+assert.strictEqual(api.configuration("FULL_FRAME",{width:640,height:480},{left:100,top:100,right:100,bottom:100},false,"","").enabled,false);
+console.log("EXPORTED_SYNTHETIC_CONFIG="+JSON.stringify({...enabled,review_id:"SYNTHETIC_TOOL_INTEROP_ONLY"}));
+console.log("ROI_IMAGE_CALIBRATION_MATH_PASS cases=12 no_camera=true no_network=true");

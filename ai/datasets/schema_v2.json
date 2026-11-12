@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FOR_CAT single-cat behavior frame metadata v2",
+  "type": "object",
+  "required": ["schema_version", "sample_id", "session_id", "source_video", "timestamp", "identity_label", "subject_label", "behavior_label", "usable", "hash", "source_hash", "path"],
+  "properties": {
+    "schema_version": {"const": 2},
+    "sample_id": {"type": "string", "pattern": "^[a-z0-9_-]{1,64}$"},
+    "session_id": {"type": "string", "pattern": "^[a-z0-9_-]{1,64}$"},
+    "source_video": {"type": "string", "maxLength": 128},
+    "source_offset_seconds": {"type": ["number", "null"], "minimum": 0, "maximum": 1000000},
+    "frame_index": {"type": "integer", "minimum": 0},
+    "sample_sequence": {"type": "integer", "minimum": 0},
+    "timestamp_source": {"enum": ["decoder_pos_msec", "frame_index_fps"]},
+    "quality": {"type": "object", "additionalProperties": false, "properties": {
+      "blur_variance": {"type": "number", "minimum": 0},
+      "blur_threshold": {"type": "number", "minimum": 0},
+      "blur_warning": {"type": "boolean"},
+      "brightness_mean": {"type": "number", "minimum": 0},
+      "dhash": {"type": "string", "pattern": "^[a-f0-9]{16}$"},
+      "near_duplicate_warning": {"type": "boolean"}
+    }},
+    "timestamp": {"type": ["string", "null"], "format": "date-time"},
+    "identity_label": {"type": "null", "description": "Legacy storage compatibility slot; never an identity-model requirement."},
+    "subject_label": {"enum": ["CAT", "NONE", "UNKNOWN", "UNSURE", "SKIP", null]},
+    "behavior_label": {"enum": ["EATING", "DRINKING", "IDLE", "NONE", "UNKNOWN", "UNSURE", "SKIP", null]},
+    "usable": {"type": "boolean"},
+    "hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "source_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "path": {"type": "string", "maxLength": 128},
+    "food_type": {"type": ["string", "null"], "maxLength": 64},
+    "preference_trial_id": {"type": ["string", "null"], "minLength": 1, "maxLength": 128},
+    "food_variant": {"type": ["string", "null"], "minLength": 1, "maxLength": 128},
+    "trial_order": {"type": ["integer", "null"], "minimum": 0, "maximum": 100000},
+    "food_bowl_position": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1, "maxLength": 128, "not": {"pattern": "[Bb][Ll][Uu][Ee]|[Ww][Aa][Tt][Ee][Rr]"}}]},
+    "session_pair_or_group": {"type": ["string", "null"], "minLength": 1, "maxLength": 128},
+    "lighting": {"type": ["string", "null"], "maxLength": 64},
+    "distance": {"type": ["string", "null"], "maxLength": 64},
+    "view_angle": {"type": ["string", "null"], "maxLength": 64},
+    "occlusion": {"type": ["string", "null"], "maxLength": 64},
+    "camera_device": {"type": ["string", "null"], "maxLength": 64},
+    "notes": {"type": ["string", "null"], "maxLength": 256}
+  },
+  "allOf": [
+    {"if": {"properties": {"usable": {"const": true}}}, "then": {"properties": {"subject_label": {"const": "CAT"}, "behavior_label": {"enum": ["EATING", "DRINKING", "IDLE"]}}}},
+    {"if": {"properties": {"subject_label": {"const": "NONE"}}}, "then": {"properties": {"behavior_label": {"const": "NONE"}, "usable": {"const": false}}}},
+    {"if": {"properties": {"behavior_label": {"const": "NONE"}}}, "then": {"properties": {"subject_label": {"const": "NONE"}}}},
+    {"if": {"properties": {"behavior_label": {"enum": ["EATING", "DRINKING", "IDLE"]}}}, "then": {"properties": {"subject_label": {"const": "CAT"}}}},
+    {"if": {"properties": {"subject_label": {"const": "CAT"}}}, "then": {"properties": {"behavior_label": {"not": {"const": "NONE"}}}}}
+  ],
+  "additionalProperties": false
+}

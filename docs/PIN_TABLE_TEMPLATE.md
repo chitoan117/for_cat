@@ -6,7 +6,9 @@ GPIO `UNASSIGNED (-1)` is literal current configuration, not a pin recommendatio
 | --- | --- | --- | --- | --- | --- |
 | HX711 | DOUT | UNASSIGNED (-1) | Actual logic rail pending | Input | NO |
 | HX711 | SCK | UNASSIGNED (-1) | MCU3.3V logic, compatibility pending | Output | NO |
-| DS3231 | SDA/SCL | UNASSIGNED (-1) | Pull-ups must match MCU; pending | Bidirectional/open-drain | NO |
+| DS1302 |CLK/SCLK |Default-1;M4candidate16 |3.3Vmainlogic/supply,reviewmodule |Output |NO |
+| DS1302 |DAT/IO |Default-1;M4candidate17 |3.3V |Bidirectional,pinmodeTX/RX |NO |
+| DS1302 |CE/RST |Default-1;M4candidate18 |3.3V,activeHIGH |Output |NO |
 | SSD1306 | SDA/SCL | UNASSIGNED (-1) | Pull-up/supply pending | Bidirectional/open-drain | NO |
 | HC-SR04 | TRIG | UNASSIGNED (-1) | Trigger compatibility pending | Output | NO |
 | HC-SR04 | ECHO | UNASSIGNED (-1) | Candidate5V; condition before MCU | Input | NO |

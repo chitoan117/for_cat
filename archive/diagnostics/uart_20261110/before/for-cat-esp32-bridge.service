@@ -1,0 +1,18 @@
+[Unit]
+Description=ForCat live ESP32-S3 telemetry and AI dispatch bridge
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+WorkingDirectory=%h/for_cat/jetson
+Environment=PYTHONUNBUFFERED=1
+ExecStart=%h/for_cat/.venv/jetson-integration/bin/python %h/for_cat/jetson/tools/fc_live_bridge.py
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=5
+NoNewPrivileges=true
+UMask=0077
+
+[Install]
+WantedBy=default.target

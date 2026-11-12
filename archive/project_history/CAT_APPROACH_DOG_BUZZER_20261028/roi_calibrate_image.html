@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><title>Food ROI — offline image review</title>
+<style>body{font:16px system-ui;margin:24px;background:#17212b;color:#edf3f8}label,button{margin:8px;display:inline-block}input,select,button{font:inherit}canvas{display:block;max-width:100%;height:auto;background:#263746;border:1px solid #7c95aa;touch-action:none}pre{white-space:pre-wrap}p{max-width:1050px}</style></head>
+<body><h1>Food ROI — hiệu chỉnh từ ảnh, hoàn toàn offline</h1>
+<p>Công cụ riêng cho bàn giao, không thuộc frontend WEB_FINAL. Không mở webcam, không kết nối mạng, không nhận diện AI.
+Chọn ảnh webcam thật nguyên khung hình; kéo vùng khay ăn và xác nhận đã xem lại. Ảnh mô phỏng không chứng minh camera/HX711 physical PASS.</p>
+<label>Ảnh <input id="file" type="file" accept="image/*"></label>
+<label>Chế độ <select id="mode"><option>FULL_FRAME</option><option>ROI_ENABLED</option></select></label>
+<label>Review ID <input id="reviewId" maxlength="128" placeholder="FOOD_TRAY_YYYYMMDD_CAMERA_POSITION"></label>
+<label>Camera ID (tùy chọn) <input id="cameraId" maxlength="128" placeholder="/dev/video0"></label>
+<label><input id="reviewed" type="checkbox"> Tôi đã kiểm tra ROI trên ảnh thật, đúng vị trí camera</label>
+<button id="save">Tải food_roi.reviewed.json</button>
+<canvas id="canvas"></canvas><pre id="status">FULL_FRAME mặc định: chưa có ROI vẫn nhận diện toàn khung. Đây không phải bằng chứng vật thể ở khay.</pre>
+<script src="roi_calibration_math.js"></script><script>
+"use strict";
+const byId=id=>document.getElementById(id), canvas=byId("canvas"), context=canvas.getContext("2d");
+let image=null, rectangle=null, start=null;
+function point(event){const b=canvas.getBoundingClientRect();return {x:Math.max(0,Math.min(canvas.width,(event.clientX-b.left)*canvas.width/b.width)),y:Math.max(0,Math.min(canvas.height,(event.clientY-b.top)*canvas.height/b.height))};}
+function redraw(){if(!image)return;context.clearRect(0,0,canvas.width,canvas.height);context.drawImage(image,0,0);if(rectangle){context.strokeStyle="#ffcc00";context.lineWidth=Math.max(2,canvas.width/400);context.strokeRect(rectangle.left,rectangle.top,rectangle.right-rectangle.left,rectangle.bottom-rectangle.top);}}
+function preview(){try{byId("status").textContent=JSON.stringify(RoiCalibration.configuration(byId("mode").value,image&&{width:image.naturalWidth,height:image.naturalHeight},rectangle,byId("reviewed").checked,byId("reviewId").value,byId("cameraId").value),null,2);}catch(e){byId("status").textContent=e.message;}}
+byId("file").onchange=()=>{const file=byId("file").files[0];if(!file)return;const url=URL.createObjectURL(file), loaded=new Image();loaded.onload=()=>{URL.revokeObjectURL(url);image=loaded;rectangle=null;byId("reviewed").checked=false;canvas.width=loaded.naturalWidth;canvas.height=loaded.naturalHeight;redraw();preview();};loaded.onerror=()=>{URL.revokeObjectURL(url);byId("status").textContent="Ảnh không đọc được";};loaded.src=url;};
+canvas.onpointerdown=event=>{if(!image)return;canvas.setPointerCapture(event.pointerId);start=point(event);byId("reviewed").checked=false;};
+canvas.onpointermove=event=>{if(!start)return;const p=point(event);rectangle={left:Math.min(start.x,p.x),top:Math.min(start.y,p.y),right:Math.max(start.x,p.x),bottom:Math.max(start.y,p.y)};redraw();preview();};
+canvas.onpointerup=()=>{start=null;preview();};canvas.onpointercancel=()=>{start=null;};
+for(const id of ["mode","reviewed","reviewId","cameraId"])byId(id).onchange=preview;
+byId("save").onclick=()=>{try{const config=RoiCalibration.configuration(byId("mode").value,image&&{width:image.naturalWidth,height:image.naturalHeight},rectangle,byId("reviewed").checked,byId("reviewId").value,byId("cameraId").value);const url=URL.createObjectURL(new Blob([JSON.stringify(config,null,2)+"\n"],{type:"application/json"})), a=document.createElement("a");a.href=url;a.download="food_roi.reviewed.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);preview();}catch(e){byId("status").textContent=e.message;}};
+</script></body></html>

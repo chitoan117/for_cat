@@ -1,0 +1,7 @@
+﻿train: fixed/train/images
+val: fixed/valid/images
+test: test/images
+
+nc: 1
+names:
+  0: CAT

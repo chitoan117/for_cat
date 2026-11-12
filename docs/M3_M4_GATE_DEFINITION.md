@@ -1,4 +1,6 @@
-# M3 / M4 physical gates — current milestone remains M2
+# M3 / M4 physical gates — reported core evidence, closeout pending
+
+Actual user-supplied M3 chip/flash/webcam/initial USB protocol/CRC/ID/unplug/re-enumeration PASS scopes are in `M3_PHYSICAL_VALIDATION_RECORD.md`. Post-reconnect protocol is user-reported PASS; exact raw/date/image reference remains pending, so formal closeout is not automatically awarded. Gate criteria below are preserved; current work is M4 sensor-only preparation, not M4 PASS. No servo/pump enable.
 
 No completion score changes and no gate is declared passed by this pack. Tests/builds/simulators and filled templates without actual hardware observations do not qualify.
 
@@ -17,7 +19,7 @@ Servo/pump/sensors must stay disconnected. Sensors and actuators are **not requi
 
 ## Exact M4 minimum (later approval-gated work)
 
-After M3 and board/pin/electrical review, separately verify HX711/load cell calibration/faults, DS3231 time validity/retention, food and water level sensing, OLED/button/buzzer independence, servo motion/closure/jam timeout and pump switching/timeout/noise/leaks. Record **basic integrated safe feeding and water operation** with measured sensor/actuator outcomes, local limits/cooldown, faults/off-state and reset/link-loss recovery; no animal involved during initial actuator/integrated tests.
+AfterM3andpin/electricalreview,separatelyverifyHX711,**currentDS1302**time/CH/WP/readback/retention,food/water,OLED/button/buzzer,thenlaterseparatereviewedservo/pumprigs. RTCchangefromplannedDS3231toavailableDS1302ishistoricalselectionchange,notphysicalPASS. Basicintegratedsafe feed/water withmeasuredoutcomes/limits/cooldown/faults/reset/linklossstillneededforM4;initialrigsnoanimal,outputsstaydisabledinthispass.
 
 Each component and both integrated rigs need actual PASS evidence and reviewed firmware/drivers/power/mechanics. **Current software:** configured sensor/UI diagnostic foundations exist (`M4_DIAGNOSTIC_COMMANDS.md`), but are not hardware verified. Actuator outputs remain hard-disabled; active servo/pump test firmware is not implemented. The earlier “no sensor test drivers” description is HISTORICAL / NOT CURRENT. Do not remove the guard or wire actuators merely because this plan exists. No simulator, crop test, native assertion or predicted sensor value can count as M4.
 

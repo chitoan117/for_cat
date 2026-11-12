@@ -1,6 +1,8 @@
 # DS3231 RTC bring-up — M4, NOT SENSOR/NVS VERIFIED
 
-> **Current command availability:** `diag_rtc` and `diag_i2c` exist; use `M4_DIAGNOSTIC_COMMANDS.md` after pin/voltage review. Earlier absent-function wording below is HISTORICAL / NOT CURRENT for diagnostics, not permission to claim RTC/NVS validation.
+> **HISTORICAL / NOT CURRENT RTC:** RTC hardware changed from planned DS3231 to available DS1302 during M4 physical bring-up. Use `DS1302_BRINGUP.md` / currenthandoff; `diag_rtc` is DS1302 CLK16/DAT17/CE18. This old I2C0x68 plan is retained only for chronology and must not be used to wire/test the current RTC.
+
+> **Historical command-availability note:** this file originally describedDS3231I2C; currentdiag_rtctestsDS1302,notthesewiring/clockinstructions. Keepbelowonlyasoriginalplan;use `DS1302_BRINGUP.md` now.
 
 Prerequisite: reviewed I2C pins/3.3 V pull-ups, identified module and battery/charging behavior, approved RTC **sensor-only** firmware. Current HW_SAFE does not scan/set/read a real RTC; no `i2cdetect` command on Jetson can interrogate a chip wired to ESP32.
 

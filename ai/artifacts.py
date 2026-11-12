@@ -36,7 +36,7 @@ def parse_json(text: str):
 def read_json(path: Path, limit=5_000_000):
     if not path.is_file() or path.stat().st_size > limit:
         raise ValueError("JSON missing/oversized")
-    return parse_json(path.read_text(encoding="utf-8"))
+    return parse_json(path.read_text(encoding="utf-8-sig"))
 
 
 def write_json(path: Path, value):

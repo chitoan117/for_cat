@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Physical validation record (not a software PASS)",
+  "type": "object",
+  "required": ["schema_version", "report_scope", "created_at", "board_identity", "firmware_sha256", "configuration_sha256", "hx711_installed", "physical_validation_automatically_awarded", "tests"],
+  "properties": {
+    "schema_version": {"const": 2},
+    "report_scope": {"const": "PHYSICAL_VALIDATION_RECORD"},
+    "created_at": {"type": "string"},
+    "board_identity": {"type": "string"},
+    "firmware_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "configuration_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "hx711_installed": {"type": ["boolean", "null"]},
+    "physical_validation_automatically_awarded": {"const": false},
+    "tests": {
+      "type": "object",
+      "required": ["board_identity_flash_memory", "serial_link", "safe_gpio", "oled", "rtc", "pir", "approach_distance", "food_reservoir", "water_operational", "water_reservoir", "hx711_load_cell", "servo_closed_loop", "pump_f5305s", "actuators_still_disabled"],
+      "additionalProperties": {"$ref": "#/$defs/result"}
+    }
+  },
+  "$defs": {
+    "result": {
+      "type": "object", "required": ["status", "tested_at", "operator", "evidence"],
+      "properties": {
+        "status": {"enum": ["PASS", "FAIL", "SKIPPED", "NOT_INSTALLED", "NOT_TESTED"]},
+        "tested_at": {"type": ["string", "null"]}, "operator": {"type": ["string", "null"]},
+        "evidence": {"type": "array", "items": {"type": "object", "required": ["path", "sha256", "source"]}}
+      }
+    }
+  }
+}

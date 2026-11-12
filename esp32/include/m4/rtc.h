@@ -56,6 +56,8 @@ inline bool encodeRtc(const DateTime& time, uint8_t (&data)[7]) {
   data[6] = toBcd(time.year % 100); return true;
 }
 
+// Legacy I2C implementation retained for historical/native regression only.
+// Current physical diagnostic selects Ds1302 from ds1302.h, not this device.
 class Ds3231 {
  public:
   explicit Ds3231(I2CBus& bus) : bus_(bus) {}

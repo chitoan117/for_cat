@@ -1,213 +1,35 @@
-# 🐱 FOR_CAT — Hệ thống chăm sóc mèo thông minh
+# FOR_CAT — toàn bộ mã nguồn hệ thống cho mèo ăn/uống
 
-Dự án sử dụng **USB Webcam + Jetson Nano + ESP32-S3** để theo dõi mèo, nhận diện bằng AI và hướng tới quản lý thức ăn, nước uống tự động.
+Bản sao lưu ngày **12/11/2026**: Jetson Nano chạy AI CAT/DOG + FastAPI, ESP32-S3 điều khiển phần cứng, Flutter Web giám sát/điều khiển. Giữ lịch sử Git cũ; thư mục `archive/` chứa các lần phát triển và bàn giao trước đây.
 
----
-
-## 1. Kiến trúc hệ thống
-
-```text
-USB Webcam
-     ↓
-Jetson Nano
-     ├── OpenCV + TensorRT
-     ├── Nhận diện CAT / DOG
-     ├── Phân tích hành vi
-     ├── Lưu lịch sử
-     └── REST API
-     ↓ USB Serial
-ESP32-S3
-     ├── Cảm biến
-     ├── Servo thức ăn
-     ├── Bơm nước
-     └── Kiểm tra an toàn
-```
-
-### Vai trò
-
-| Thiết bị | Nhiệm vụ |
+| Thư mục | Nội dung |
 |---|---|
-| Webcam | Thu hình ảnh |
-| Jetson Nano | Chạy AI và xử lý logic |
-| ESP32-S3 | Điều khiển phần cứng và kiểm tra an toàn |
-| Servo | Cấp thức ăn |
-| Pump | Cấp nước |
-| Sensors | Theo dõi thức ăn, nước và trạng thái |
+| `esp32/` | Firmware hiện tại: `esp32.ino` + 7 header, bản offline R2 đã nạp ngày 11/11 |
+| `jetson/app/` | Backend FastAPI, trạng thái, lịch ăn, hành vi, nước và mức dự trữ |
+| `jetson/tools/` | UART bridge, AI tap và các công cụ trên Jetson |
+| `jetson/ai/`, `ai/` | Nhận diện TensorRT C++ và mã chuẩn bị/huấn luyện/đánh giá AI |
+| `frontend/` | Toàn bộ source Flutter, assets, kiểm thử, pubspec và dependency lock |
+| `web_release/` | Bản Flutter REAL đã biên dịch, có tài nguyên cục bộ dùng offline |
+| `models/` | Engine TensorRT đã export và các model tham chiếu có sẵn trên laptop |
+| `firmware/offline_r2/` | File build firmware tương ứng, không chứa dump NVS/khóa bí mật |
+| `hardware/proteus/` | File PCB `pet_feeder.pdsprj` |
+| `hardware/uno_tests/` | Các sketch UNO tham chiếu servo, loadcell, pump |
+| `systemd/`, `deploy/`, `scripts/` | Cấu hình dịch vụ, UART, build và triển khai |
+| `archive/` | Source phiên bản cũ, các lần thử và scripts chẩn đoán; không nạp đè bản hiện tại |
+| `BACKUP_MANIFEST.json` | SHA-256 từng tệp để kiểm tra bản sao |
 
----
+## Trạng thái cần biết trước khi sử dụng
 
-## 2. Trạng thái hiện tại
+Đây là bản sao lưu source, **không phải tuyên bố toàn bộ phần cứng đã hoàn thiện**. Lần thử cuối ngày 11/11: OLED còn `KIEM TRA CUA`, giữ nút PCB chưa hiện `GIU5S XACNHAN`; lỗi manual/offline vẫn cần chẩn đoán. USB trên laptop lúc cuối chưa nhận COM, có thiết bị báo lỗi nhận dạng USB. Không tự bỏ khóa cửa hoặc lấy lại mốc cân khi chưa kiểm tra thực tế.
 
-- ✅ Jetson Nano hoạt động
-- ✅ USB Webcam hoạt động
-- ✅ OpenCV C++ hoạt động
-- ✅ TensorRT FP16 hoạt động
-- ✅ Nhận diện CAT / DOG chạy khoảng 30 FPS
-- ✅ ESP32-S3 đã có firmware nền tảng
-- ✅ Source code đã lưu trên GitHub
-- ⚠️ AI hiện vẫn ở **SHADOW MODE**
-- ⚠️ AI chưa tự động kích hoạt Servo/Pump
+Jetson không SSH được tại thời điểm sao lưu. Backend được ghép từ bản export trực tiếp ngày 10/11 và các thay đổi đã triển khai có lưu trên laptop ngày 11/11. Bridge root là bản UART **a68b28…** đã triển khai; bản bulk-read **169456…** chỉ nằm trong archive, chưa triển khai. Firmware source root khớp bản R2 đã nạp/readback, SHA-256 **5e5f39e24cf46edb19998e06573779bb0d5f4345817da847be3a167d1c3ef2ec**.
 
----
+Xem [hướng dẫn khôi phục](docs/KHOI_PHUC_TU_GITHUB.md), [trạng thái phần cứng](docs/TRANG_THAI_SAO_LUU_20261112.md) và tài liệu cũ trong `docs/`. Các mô tả cũ có thể dùng JSN/PIR/USB hoặc chân D2 cũ; đối chiếu bảng chân hiện tại trong tài liệu trạng thái.
 
-## 3. AI hiện tại
+## Truy cập cùng một ứng dụng
 
-```text
-Model: YOLOv8n
-Input: 320 x 320
-Runtime: TensorRT FP16
+- Trên chính Jetson: `http://127.0.0.1:8000/app`, dùng được khi mất Wi-Fi nếu backend và nguồn còn hoạt động.
+- Thiết bị cùng mạng LAN: `http://<IP-hiện-tại-của-Jetson>:8000/app`.
+- Mạng ngoài/4G/5G: HTTPS Tailscale đã cấu hình; thiết bị phải có quyền trong tailnet và có Internet.
 
-CAT  → cho phép đi tiếp vào logic
-DOG  → BLOCK
-NONE → BLOCK
-```
-
-Model hiện tại dùng để thử nghiệm và đánh giá, chưa dùng làm điều kiện duy nhất để điều khiển phần cứng.
-
----
-
-## 4. Luồng hoạt động
-
-```text
-Mèo đến
-   ↓
-Webcam ghi hình
-   ↓
-Jetson nhận diện
-   ↓
-Phân tích hành vi
-   ↓
-Kiểm tra điều kiện
-   ↓
-Gửi yêu cầu sang ESP32-S3
-   ↓
-ESP32 kiểm tra an toàn
-   ↓
-Servo / Pump
-```
-
----
-
-## 5. Cấu trúc dự án
-
-```text
-for_cat/
-├── jetson/      Code chạy trên Jetson Nano
-├── esp32/       Firmware ESP32-S3
-├── ai/          Dataset và công cụ AI
-├── docs/        Tài liệu dự án
-├── scripts/     Script kiểm tra/build
-├── README.md
-└── JETSON_COMMANDS.md
-```
-
----
-
-## 6. Chạy AI trên Jetson
-
-### SSH từ laptop
-
-```bash
-ssh -Y toan@192.168.123.10
-```
-
-### Chạy nhận diện CAT / DOG
-
-```bash
-cd /home/toan/for_cat/jetson/ai
-./cat_dog_trt
-```
-
-Thoát bằng:
-
-```text
-q
-```
-
-hoặc:
-
-```text
-Ctrl + C
-```
-
----
-
-## 7. Các chức năng hướng tới
-
-- Nhận diện mèo và chó
-- Theo dõi thời gian mèo đến
-- Nhận diện hành vi ăn/uống
-- Ghi thời gian bắt đầu và kết thúc
-- Tính thời gian ăn
-- Theo dõi lượng thức ăn
-- Theo dõi lượng nước
-- Nghiên cứu món mèo thích
-- Lưu lịch sử vào cơ sở dữ liệu
-- Hiển thị dữ liệu trên Web/App
-
----
-
-## 8. Nguyên tắc an toàn
-
-```text
-Jetson Nano = AI + xử lý cấp cao
-ESP32-S3    = kiểm tra an toàn cuối cùng
-```
-
-Jetson không trực tiếp điều khiển Servo/Pump.
-
-ESP32-S3 phải kiểm tra điều kiện an toàn trước khi phần cứng hoạt động.
-
----
-
-## 9. Lệnh sử dụng
-
-Các lệnh Jetson, TensorRT, Webcam, Compile C++ và Git được lưu tại:
-
-```text
-JETSON_COMMANDS.md
-```
-
----
-
-## 10. Cập nhật GitHub
-
-Sau khi sửa code:
-
-```bash
-cd /home/toan/for_cat
-git add .
-git commit -m "Update project"
-git push
-```
-
-Lấy phiên bản mới từ GitHub:
-
-```bash
-git pull
-```
-
----
-
-## 11. Phần cứng chính
-
-- Jetson Nano 2GB
-- ESP32-S3
-- USB Webcam
-- Servo
-- Water Pump
-- Load Cell + HX711
-- Cảm biến mức nước
-- RTC
-- Display
-
----
-
-## Trạng thái an toàn hiện tại
-
-```text
-AI_SHADOW_MODE       = ON
-AUTO_ACTUATOR_CONTROL = OFF
-```
-
-Điều khiển tự động chỉ được bật sau khi AI, cảm biến và cơ chế an toàn được kiểm tra đầy đủ.
+Không đưa lên repo: mật khẩu/token/SSH key, `.env` thật, dump flash/NVS, SQLite lịch sử vận hành, ảnh/video camera cá nhân, dataset ảnh và bộ cài/SDK/venv/cache. Đây không phải các tệp mã nguồn. Nếu cần giữ dữ liệu vận hành riêng, hãy sao lưu riêng trước khi xóa máy.

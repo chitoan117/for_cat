@@ -1,0 +1,10 @@
+name: feeder_demo
+description: Read-only snapshot of the existing FOR_CAT shared widgets/camera view closure.
+publish_to: none
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.0
+  web: ^1.1.0

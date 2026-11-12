@@ -8,6 +8,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from ai.artifacts import relative_file, parse_json
+from ai.label_schema import BEHAVIOR_V2, task_label, v2_pair_error
 
 ROOT = Path(__file__).resolve().parent / "datasets"
 IDENTITY_LABELS = {"OWNER_CAT", "OTHER_CAT", "OTHER_OBJECT", "UNKNOWN", "SKIP", None}
@@ -16,11 +17,12 @@ OPTIONAL = ("food_type", "lighting", "distance", "view_angle", "occlusion", "cam
 REQUIRED = ("sample_id", "session_id", "source_video", "timestamp", "identity_label",
             "behavior_label", "usable", "hash", "source_hash", "path")
 ID_PATTERN = re.compile(r"^[a-z0-9_-]{1,64}$")
+MAX_MANIFEST_BYTES = 200_000_000 # modern offline host; never used for Nano inference
 
 
-def digest(path: Path) -> str:
-    if not path.is_file() or path.stat().st_size > 1_000_000_000:
-        raise ValueError("source missing or exceeds 1 GB cap")
+def digest(path: Path, *, max_bytes: int = 1_000_000_000) -> str:
+    if not path.is_file() or path.stat().st_size > max_bytes:
+        raise ValueError("source missing or exceeds explicit byte cap")
     sha = hashlib.sha256()
     with path.open("rb") as stream:
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):
@@ -33,14 +35,39 @@ def validate_row(row: dict) -> List[str]:
     if not isinstance(row, dict):
         return ["metadata row must be an object"]
     errors += [f"missing {key}" for key in REQUIRED if key not in row]
-    errors += [f"unknown field {key}" for key in row if key not in REQUIRED + OPTIONAL + ("source_offset_seconds",)]
+    version = row.get("schema_version", 1)
+    if type(version) is not int or version not in (1, 2):
+        errors.append("unsupported schema_version")
+    from ai.label_schema import PREFERENCE_FIELDS, preference_error
+    extra = (("schema_version", "subject_label", "frame_index", "sample_sequence", "timestamp_source", "quality")
+             + PREFERENCE_FIELDS) if version == 2 else ("schema_version",)
+    errors += [f"unknown field {key}" for key in row if key not in REQUIRED + OPTIONAL + ("source_offset_seconds",) + extra]
     for key in ("sample_id", "session_id"):
         if key in row and (not isinstance(row[key], str) or not ID_PATTERN.fullmatch(row[key])):
             errors.append(f"invalid {key}")
     if not (row.get("identity_label") is None or
             isinstance(row.get("identity_label"), str) and row["identity_label"] in IDENTITY_LABELS):
         errors.append("invalid identity_label")
-    if not (row.get("behavior_label") is None or
+    if version == 2:
+        if "subject_label" not in row:
+            errors.append("missing subject_label")
+        if row.get("identity_label") is not None:
+            errors.append("identity_label must be null for single-cat schema v2")
+        pair_error = v2_pair_error(row.get("subject_label"), row.get("behavior_label"), row.get("usable"))
+        if pair_error:
+            errors.append(pair_error)
+        preference_problem = preference_error(row)
+        if preference_problem:
+            errors.append(preference_problem)
+        for field in ("frame_index", "sample_sequence"):
+            if field in row and (type(row[field]) is not int or row[field] < 0):
+                errors.append(f"invalid {field}")
+        if "timestamp_source" in row and row["timestamp_source"] not in ("decoder_pos_msec", "frame_index_fps"):
+            errors.append("invalid timestamp_source")
+        if "quality" in row:
+            from ai.quality import validate_quality
+            errors.extend(validate_quality(row["quality"]))
+    elif not (row.get("behavior_label") is None or
             isinstance(row.get("behavior_label"), str) and row["behavior_label"] in BEHAVIOR_LABELS):
         errors.append("invalid behavior_label")
     if "usable" in row and not isinstance(row["usable"], bool):
@@ -80,11 +107,11 @@ def load_manifest(root: Path = ROOT) -> Tuple[List[dict], List[str]]:
         return [], []
     if not manifest.is_file():
         return [], ["manifest is not a file"]
-    if manifest.stat().st_size > 20_000_000:
-        return [], ["manifest exceeds 20 MB limit"]
+    if manifest.stat().st_size > MAX_MANIFEST_BYTES:
+        return [], ["manifest exceeds 200 MB offline-host limit"]
     rows, errors = [], []
     try:
-        lines = manifest.read_text(encoding="utf-8").splitlines()
+        lines = manifest.read_text(encoding="utf-8-sig").splitlines()
     except UnicodeError:
         return [], ["manifest is not UTF-8"]
     for line_no, line in enumerate(lines, 1):
@@ -106,21 +133,23 @@ def append_row(root: Path, row: dict, *, apply: bool = False) -> dict:
     problems = validate_row(row)
     if problems:
         raise ValueError("; ".join(problems))
-    old, errors = load_manifest(root)
-    if errors:
-        raise ValueError("invalid existing manifest: " + "; ".join(errors[:3]))
-    if row["sample_id"] in {r["sample_id"] for r in old} or row["hash"] in {r["hash"] for r in old}:
-        raise ValueError("duplicate sample ID or exact image hash")
-    if apply:
-        root.mkdir(parents=True, exist_ok=True)
-        with (root / "manifest.jsonl").open("a", encoding="utf-8") as stream:
-            stream.write(json.dumps(row, sort_keys=True) + "\n")
+    from ai.manifest_io import atomic_text, dataset_lock, rows_text
+    with dataset_lock(root, apply):
+        old, errors = load_manifest(root)
+        if errors:
+            raise ValueError("invalid existing manifest: " + "; ".join(errors[:3]))
+        if row["sample_id"] in {r["sample_id"] for r in old} or row["hash"] in {r["hash"] for r in old}:
+            raise ValueError("duplicate sample ID or exact image hash")
+        if apply:
+            atomic_text(root / "manifest.jsonl", rows_text(old + [row]))
     return {"status": "IMPORTED" if apply else "DRY_RUN", "sample_id": row["sample_id"]}
 
 
-def split_sessions(rows: List[dict], seed: int = 42) -> Dict[str, List[str]]:
-    sessions = sorted({r["session_id"] for r in rows if r.get("usable") and
-                       r.get("identity_label") not in (None, "SKIP")},
+def split_sessions(rows: List[dict], seed: int = 42, *, source_sessions=None) -> Dict[str, List[str]]:
+    identifiers = source_sessions if source_sessions is not None else {r["session_id"] for r in rows if r.get("usable") and
+                       ((r.get("schema_version", 1) == 2 and task_label(r, "behavior_v2") in BEHAVIOR_V2)
+                        or (r.get("schema_version", 1) == 1 and r.get("identity_label") not in (None, "SKIP")))}
+    sessions = sorted(set(identifiers),
                       key=lambda x: hashlib.sha256(f"{seed}:{x}".encode()).hexdigest())
     total = len(sessions)
     if total < 3:
@@ -135,11 +164,13 @@ def split_sessions(rows: List[dict], seed: int = 42) -> Dict[str, List[str]]:
 
 
 def validate_splits(splits: Dict[str, List[str]]) -> List[str]:
-    if not isinstance(splits, dict) or any(not isinstance(splits.get(name), list)
+    if not isinstance(splits, dict) or set(splits) != {"train", "validation", "test"} or any(not isinstance(splits.get(name), list)
                                            or any(not isinstance(value, str) for value in splits[name])
                                            for name in ("train", "validation", "test")):
         return ["invalid session split structure"]
     sets = [set(splits.get(name, [])) for name in ("train", "validation", "test")]
+    if any(len(values) != len(set(values)) for values in splits.values()):
+        return ["duplicate session within split"]
     return ["session leakage across splits"] if any(sets[i] & sets[j]
         for i, j in ((0, 1), (0, 2), (1, 2))) else []
 
@@ -156,6 +187,8 @@ def image_integrity(path: Path) -> str:
     try:
         with Image.open(path) as image:
             image.verify()
+        with Image.open(path) as image:
+            image.load()
         return "OK"
     except Exception:  # Pillow may raise a decompression-bomb exception
         return "CORRUPT"
@@ -217,7 +250,7 @@ def report(root: Path = ROOT) -> dict:
                     hash_mismatches += 1
             except ValueError:
                 errors.append(f"oversized image: {row['sample_id']}")
-    identity = Counter(r["identity_label"] or "MISSING" for r in rows)
+    identity = Counter(r["identity_label"] or "MISSING" for r in rows if r.get("schema_version", 1) == 1)
     behavior = Counter(r["behavior_label"] or "MISSING" for r in rows)
     unavailable = any(quality.get(name, 0) for name in ("MISSING", "CORRUPT", "DECODER_UNAVAILABLE"))
     split_leakage = None
@@ -245,7 +278,10 @@ def report(root: Path = ROOT) -> dict:
                           ("occlusion", "occlusion"), ("food_type", "food_type"))
                           if all(not r.get(values) for r in rows)],
         "image_integrity": dict(quality),
-        "missing_labels": sum(r["identity_label"] is None or r["behavior_label"] is None for r in rows),
+        "missing_labels": sum((r.get("subject_label") is None if r.get("schema_version", 1) == 2
+                               else r["identity_label"] is None) or r["behavior_label"] is None for r in rows),
+        "schema_versions": dict(Counter(r.get("schema_version", 1) for r in rows)),
+        "subjects_v2": dict(Counter(r.get("subject_label") or "MISSING" for r in rows if r.get("schema_version") == 2)),
         "unusable": sum(not r["usable"] for r in rows),
         "splits": splits, "errors": errors,"split_leakage":split_leakage,
     }

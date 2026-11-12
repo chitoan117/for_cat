@@ -9,7 +9,7 @@ For every stage record date, exact board/part revision, wiring photo or diagram,
 | 3 ESP32-S3 compile/flash | Select reviewed S3 HW_SAFE USB route (`esp32s3_n16r8_hw_safe_uart` for an identified bridge); explicit upload only after exact board/memory/port review | build/flash/boot recorded | build/upload error | servo/pump disconnected; classic profile is not seller-S3 firmware | build/image hash/log |
 | 4 Serial link | PING/GET_STATUS, CRC, unplug/reconnect | correlated replies, offline/recovery | timeout, wrong ID/CRC | USB only, no GPIO UART | protocol trace |
 | 5 HX711/load cell | verify tare and known masses, faulty/unplugged behavior | stable calibrated grams, FAULT on errors | drift/timeout | no gate actuator | samples/calibration |
-| 6 DS3231 | compare UTC and power-cycle RTC | valid time and day preserved | invalid/rollback | daily limits fail closed | clock logs |
+| 6 DS1302 |review3.3V/CLK16/DAT17/CE18;explicitUTC/readback/power-cycle |validclock/CH/WP/retentionobserved |invalid/halted/rollback/IO |dailylimitsfailclosed,chargerneverenabled |actualclock/wiring/image/reference/faultlogs |
 | 7 Food ultrasonic | bounded measurements against known levels | stable readings/timeout fault | 5 V ECHO, bad echoes | level shift verified first | voltage/readings |
 | 8 Water ultrasonic | bounded readings with hysteresis | low/high and faults distinguished | false wet/dry | level shift and splash protection | readings |
 | 9 OLED | show fault/status with sensor disconnected | legible status, no false HEALTHY | blank/bus error | check I2C voltage | photo/log |
